@@ -1,5 +1,6 @@
 package com.safeway.financial.presentation.controllers;
 
+import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadePorIdUseCase;
 import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadesUseCase;
 import com.safeway.financial.application.usecases.mensalidade.CancelarMensalidadeUseCase;
 import com.safeway.financial.application.usecases.mensalidade.PagarMensalidadeUseCase;
@@ -33,6 +34,7 @@ import java.util.UUID;
 public class MensalidadeController {
 
     private final BuscarMensalidadesUseCase buscarMensalidadesUseCase;
+    private final BuscarMensalidadePorIdUseCase buscarMensalidadePorIdUseCase;
     private final PagarMensalidadeUseCase pagarMensalidadeUseCase;
     private final CancelarMensalidadeUseCase cancelarMensalidadeUseCase;
     private final MensalidadeControllerMapper mapper;
@@ -42,7 +44,7 @@ public class MensalidadeController {
             @RequestParam(required = false)UUID alunoId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate dataInicio,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate dataFim,
-            @RequestParam(required = false) List<StatusPagamento> status,
+            @RequestParam(required = false)List<StatusPagamento> status,
             @PageableDefault(sort = "dataVencimento", direction = Sort.Direction.ASC)Pageable pageable) {
 
         UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
@@ -53,6 +55,15 @@ public class MensalidadeController {
                 .executar(input, pageable).map(mapper::toResponse);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MensalidadeResponse> buscarMensalidadePorId(@PathVariable UUID id) {
+
+        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+
+        MensalidadeResponse response = mapper.toResponse(buscarMensalidadePorIdUseCase.buscarMensalidadePorId(id, usuarioId));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/pendentes")
