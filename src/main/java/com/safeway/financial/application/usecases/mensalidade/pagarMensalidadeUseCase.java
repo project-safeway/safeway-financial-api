@@ -1,11 +1,12 @@
 package com.safeway.financial.application.usecases.mensalidade;
 
+import com.safeway.financial.application.dto.MensalidadeDTO;
 import org.apache.coyote.BadRequestException;
 
 import java.util.UUID;
 
 public interface pagarMensalidadeUseCase {
 
-    void registrarPagamento(UUID id) throws BadRequestException;
+    MensalidadeDTO registrarPagamento(UUID mensalidadeId, UUID usuarioId) throws BadRequestException;
 
 }
