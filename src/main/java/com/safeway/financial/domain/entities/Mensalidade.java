@@ -59,6 +59,7 @@ public class Mensalidade {
 
     public void marcarComoPago(LocalDate dataPagamento) {
         this.dataPagamento = dataPagamento;
+        this.valorPago = valorMensalidade;
         this.status = StatusPagamento.PAGO;
     }
 
