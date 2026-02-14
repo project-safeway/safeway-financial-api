@@ -27,7 +27,7 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
 
         Mensalidade mensalidade = mensalidadeRepository.buscarPorId(mensalidadeId)
                 .orElseThrow(() -> {
-                    log.error("Erro ao buscar o mensalidade de id {}", mensalidadeId);
+                    log.error("Erro ao buscar a mensalidade de id {}", mensalidadeId);
                     return new MensalidadeNotFoundException("Erro ao tentar buscar a mensalidade");
                 });
 
@@ -39,7 +39,7 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
 
         if (!alunoData.usuarioId().equals(usuarioId)) {
             log.error("O id do usuário da sessão não corresponde ao id do usuario relacionado ao aluno. ID-SESSAO: {} ID-ALUNO: {}", usuarioId, alunoData.usuarioId());
-            throw new OperationNotAlloyedException("Pagamento não permitido");
+            throw new OperationNotAlloyedException("Operação não permitida");
         }
 
         return converterParaDTO(mensalidade, alunoData);

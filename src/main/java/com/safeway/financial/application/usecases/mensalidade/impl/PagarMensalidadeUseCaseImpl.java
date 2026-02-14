@@ -45,7 +45,7 @@ public class PagarMensalidadeUseCaseImpl implements PagarMensalidadeUseCase {
 
         if (mensalidade.getStatus().equals(StatusPagamento.CANCELADO)) {
             log.error("Tentativa de registrar pagamento para mensalidade já cancelada. ID-MENSALIDADE: {}", mensalidade.getId());
-            throw new MensalidadeWithFinalStatusException("Mensaldiade já cancelada");
+            throw new MensalidadeWithFinalStatusException("Mensalidade já cancelada");
         }
     }
 
