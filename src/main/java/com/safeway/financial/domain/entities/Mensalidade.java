@@ -67,4 +67,8 @@ public class Mensalidade {
         return LocalDate.now().isAfter(this.dataVencimento) &&
                 StatusPagamento.PENDENTE.equals(this.status);
     }
+
+    public void marcarComoCancelada() {
+        this.status = StatusPagamento.CANCELADO;
+    }
 }

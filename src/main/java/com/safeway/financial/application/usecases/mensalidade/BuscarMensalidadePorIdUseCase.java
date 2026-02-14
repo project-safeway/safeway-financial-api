@@ -4,8 +4,8 @@ import com.safeway.financial.application.dto.MensalidadeDTO;
 
 import java.util.UUID;
 
-public interface pagarMensalidadeUseCase {
+public interface BuscarMensalidadePorIdUseCase {
 
-    MensalidadeDTO registrarPagamento(UUID mensalidadeId, UUID usuarioId);
+    MensalidadeDTO buscarMensalidadePorId(UUID mensalidadeId, UUID usuarioId);
 
 }

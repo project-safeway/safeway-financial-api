@@ -1,7 +1,8 @@
 package com.safeway.financial.presentation.controllers;
 
 import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadesUseCase;
-import com.safeway.financial.application.usecases.mensalidade.pagarMensalidadeUseCase;
+import com.safeway.financial.application.usecases.mensalidade.CancelarMensalidadeUseCase;
+import com.safeway.financial.application.usecases.mensalidade.PagarMensalidadeUseCase;
 import com.safeway.financial.domain.enums.StatusPagamento;
 import com.safeway.financial.presentation.dto.response.MensalidadeResponse;
 import com.safeway.financial.presentation.mappers.MensalidadeControllerMapper;
@@ -32,7 +33,8 @@ import java.util.UUID;
 public class MensalidadeController {
 
     private final BuscarMensalidadesUseCase buscarMensalidadesUseCase;
-    private final pagarMensalidadeUseCase pagarMensalidadeUseCase;
+    private final PagarMensalidadeUseCase pagarMensalidadeUseCase;
+    private final CancelarMensalidadeUseCase cancelarMensalidadeUseCase;
     private final MensalidadeControllerMapper mapper;
 
     @GetMapping
@@ -72,6 +74,15 @@ public class MensalidadeController {
         UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
 
         MensalidadeResponse response = mapper.toResponse(pagarMensalidadeUseCase.registrarPagamento(id, usuarioId));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PatchMapping("/cancelar/{id}")
+    public ResponseEntity<MensalidadeResponse> cancelarMensalidade(@PathVariable UUID id) {
+
+        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+
+        MensalidadeResponse response = mapper.toResponse(cancelarMensalidadeUseCase.cancelarMensalidade(id, usuarioId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
