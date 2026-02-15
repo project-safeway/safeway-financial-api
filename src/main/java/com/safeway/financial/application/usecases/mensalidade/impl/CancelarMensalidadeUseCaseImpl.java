@@ -26,7 +26,7 @@ public class CancelarMensalidadeUseCaseImpl implements CancelarMensalidadeUseCas
         log.info("Iniciando processo de cancelar mensalidade {} do usuario {}", mensalidadeId, usuarioId);
 
         MensalidadeDTO dto = buscarMensalidadePorIdUseCase.buscarMensalidadePorId(mensalidadeId, usuarioId);
-        Mensalidade mensalidade = converterParaDomain(dto);
+        Mensalidade mensalidade = buscarMensalidadePorIdUseCase.converterParaDomain(dto);
 
         validarMensalidade(mensalidade);
 
@@ -46,18 +46,6 @@ public class CancelarMensalidadeUseCaseImpl implements CancelarMensalidadeUseCas
             log.error("Tentativa de cancelar mensalidade inválida. ID-MENSALIDADE: {}", mensalidade.getId());
             throw new MensalidadeWithFinalStatusException("Mensalidade já cancelada");
         }
-    }
-
-    private Mensalidade converterParaDomain(MensalidadeDTO dto) {
-        return new Mensalidade(
-                dto.id(),
-                dto.alunoId(),
-                dto.dataVencimento(),
-                dto.valorMensalidade(),
-                dto.status(),
-                dto.dataPagamento(),
-                dto.valorPago()
-        );
     }
 
     private MensalidadeDTO converterParaDTO(Mensalidade mensalidade, String nomeAluno) {

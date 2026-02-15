@@ -1,5 +1,6 @@
 package com.safeway.financial.presentation.controllers;
 
+import com.safeway.financial.application.usecases.mensalidade.AplicarDescontoUseCase;
 import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadePorIdUseCase;
 import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadesUseCase;
 import com.safeway.financial.application.usecases.mensalidade.CancelarMensalidadeUseCase;
@@ -37,6 +38,7 @@ public class MensalidadeController {
     private final BuscarMensalidadePorIdUseCase buscarMensalidadePorIdUseCase;
     private final PagarMensalidadeUseCase pagarMensalidadeUseCase;
     private final CancelarMensalidadeUseCase cancelarMensalidadeUseCase;
+    private final AplicarDescontoUseCase aplicarDescontoUseCase;
     private final MensalidadeControllerMapper mapper;
 
     @GetMapping
@@ -94,6 +96,15 @@ public class MensalidadeController {
         UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
 
         MensalidadeResponse response = mapper.toResponse(cancelarMensalidadeUseCase.cancelarMensalidade(id, usuarioId));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PatchMapping("/desconto/{id}")
+    public ResponseEntity<MensalidadeResponse> aplicarDesconto(@PathVariable UUID id, @RequestParam Double valorDesconto) {
+
+        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+
+        MensalidadeResponse response = mapper.toResponse(aplicarDescontoUseCase.aplicarDesconto(id, valorDesconto, usuarioId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
