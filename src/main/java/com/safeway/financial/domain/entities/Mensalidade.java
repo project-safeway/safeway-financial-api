@@ -71,4 +71,11 @@ public class Mensalidade {
     public void marcarComoCancelada() {
         this.status = StatusPagamento.CANCELADO;
     }
+
+    public void aplicarDesconto(Double valorDesconto) {
+        this.valorMensalidade -= valorDesconto;
+        if (valorMensalidade.equals(valorPago)) {
+            this.status = StatusPagamento.PAGO;
+        }
+    }
 }

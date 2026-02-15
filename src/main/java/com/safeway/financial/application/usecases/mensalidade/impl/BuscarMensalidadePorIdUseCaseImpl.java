@@ -11,6 +11,7 @@ import com.safeway.financial.domain.repositories.MensalidadeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -23,6 +24,7 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
     private final AlunoGateway alunoGateway;
 
     @Override
+    @Transactional(readOnly = true)
     public MensalidadeDTO buscarMensalidadePorId(UUID mensalidadeId, UUID usuarioId) {
 
         Mensalidade mensalidade = mensalidadeRepository.buscarPorId(mensalidadeId)
@@ -43,6 +45,19 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
         }
 
         return converterParaDTO(mensalidade, alunoData);
+    }
+
+    @Override
+    public Mensalidade converterParaDomain(MensalidadeDTO dto) {
+        return new Mensalidade(
+                dto.id(),
+                dto.alunoId(),
+                dto.dataVencimento(),
+                dto.valorMensalidade(),
+                dto.status(),
+                dto.dataPagamento(),
+                dto.valorPago()
+        );
     }
 
     private MensalidadeDTO converterParaDTO(Mensalidade mensalidade, AlunoGateway.AlunoData alunoData) {
