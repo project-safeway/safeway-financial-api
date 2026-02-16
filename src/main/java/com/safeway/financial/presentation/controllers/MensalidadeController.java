@@ -4,8 +4,10 @@ import com.safeway.financial.application.usecases.mensalidade.AplicarDescontoUse
 import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadePorIdUseCase;
 import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadesUseCase;
 import com.safeway.financial.application.usecases.mensalidade.CancelarMensalidadeUseCase;
+import com.safeway.financial.application.usecases.mensalidade.CriarMensalidadeUseCase;
 import com.safeway.financial.application.usecases.mensalidade.PagarMensalidadeUseCase;
 import com.safeway.financial.domain.enums.StatusPagamento;
+import com.safeway.financial.presentation.dto.request.MensalidadeRequest;
 import com.safeway.financial.presentation.dto.response.MensalidadeResponse;
 import com.safeway.financial.presentation.mappers.MensalidadeControllerMapper;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,6 +43,7 @@ public class MensalidadeController {
     private final PagarMensalidadeUseCase pagarMensalidadeUseCase;
     private final CancelarMensalidadeUseCase cancelarMensalidadeUseCase;
     private final AplicarDescontoUseCase aplicarDescontoUseCase;
+    private final CriarMensalidadeUseCase criarMensalidadeUseCase;
     private final MensalidadeControllerMapper mapper;
 
     @GetMapping
@@ -106,6 +111,23 @@ public class MensalidadeController {
 
         MensalidadeResponse response = mapper.toResponse(aplicarDescontoUseCase.aplicarDesconto(id, valorDesconto, usuarioId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/criar")
+    public ResponseEntity<MensalidadeResponse> criarMensalidade(@RequestBody MensalidadeRequest request) {
+        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+
+        var input = new CriarMensalidadeUseCase.Input(
+                request.alunoId(),
+                request.dataVencimento(),
+                request.valorMensalidade(),
+                request.status(),
+                request.dataPagamento(),
+                request.valorPago()
+        );
+
+        MensalidadeResponse response = mapper.toResponse(criarMensalidadeUseCase.criarNovaMensalidade(input, usuarioId));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 }
