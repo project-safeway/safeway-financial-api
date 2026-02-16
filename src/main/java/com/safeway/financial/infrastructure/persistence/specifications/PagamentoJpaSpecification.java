@@ -50,9 +50,16 @@ public class PagamentoJpaSpecification {
             }
 
             if (domainSpec.getDescricao() != null && !domainSpec.getDescricao().isEmpty()){
+                String sanitized = domainSpec.getDescricao()
+                        .replace("\\", "\\\\")
+                        .replace("%", "\\%")
+                        .replace("_", "\\_")
+                        .toLowerCase();
+
                 predicates.add(criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("descricao")),
-                        "%" + domainSpec.getDescricao().toLowerCase() + "%"
+                        "%" + sanitized + "%",
+                        '\\'
                 ));
             }
 
