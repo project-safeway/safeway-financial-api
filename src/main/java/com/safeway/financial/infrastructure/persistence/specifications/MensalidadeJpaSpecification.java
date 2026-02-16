@@ -22,15 +22,15 @@ public class MensalidadeJpaSpecification {
             }
 
             if (domainSpec.getDataInicio() != null){
-                predicates.add(criteriaBuilder.equal(
-                        root.get("dataInicio"),
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(
+                        root.get("dataVencimento"),
                         domainSpec.getDataInicio()
                 ));
             }
 
             if (domainSpec.getDataFim() != null){
-                predicates.add(criteriaBuilder.equal(
-                        root.get("dataFim"),
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(
+                        root.get("dataVencimento"),
                         domainSpec.getDataFim()
                 ));
             }
