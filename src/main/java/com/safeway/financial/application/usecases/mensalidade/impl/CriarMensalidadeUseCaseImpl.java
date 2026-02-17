@@ -25,6 +25,11 @@ public class CriarMensalidadeUseCaseImpl implements CriarMensalidadeUseCase {
     public MensalidadeDTO criarNovaMensalidade(Input input, UUID usuarioId) {
         log.info("Criando nova mensalidade para alunoId: {}", input.alunoId());
 
+        if (input.alunoId() == null) {
+            log.error("ID do aluno é nulo. Não é possível criar mensalidade.");
+            throw new IllegalArgumentException("O ID do aluno é obrigatório para criar uma mensalidade.");
+        }
+
         AlunoGateway.AlunoData alunoData = alunoGateway.buscarPorId(input.alunoId())
                 .orElseThrow(() -> {
                     log.error("Aluno não encontrado para id: {}", input.alunoId());
@@ -83,12 +88,6 @@ public class CriarMensalidadeUseCaseImpl implements CriarMensalidadeUseCase {
                 input.valorMensalidade() != null &&
                 input.valorPago() > input.valorMensalidade()) {
             throw new IllegalArgumentException("Valor pago não pode ser maior que o valor da mensalidade.");
-        }
-
-        if (input.dataPagamento() != null &&
-                input.dataVencimento() != null &&
-                input.dataPagamento().isBefore(input.dataVencimento())) {
-            throw new IllegalArgumentException("Data de pagamento não pode ser anterior ao vencimento.");
         }
     }
 
