@@ -4,6 +4,7 @@ import com.safeway.financial.application.dto.PagamentoDTO;
 import com.safeway.financial.application.usecases.pagamento.AtualizarPagamentoUseCase;
 import com.safeway.financial.application.usecases.pagamento.BuscarPagamentoPorIdUseCase;
 import com.safeway.financial.application.usecases.pagamento.BuscarPagamentoUseCase;
+import com.safeway.financial.application.usecases.pagamento.DeletarPagamentoUseCase;
 import com.safeway.financial.application.usecases.pagamento.RegistrarPagamentoUseCase;
 import com.safeway.financial.presentation.dto.request.PagamentoRequest;
 import com.safeway.financial.presentation.dto.response.PagamentoResponse;
@@ -17,6 +18,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,6 +41,7 @@ public class PagamentoController {
     private final BuscarPagamentoPorIdUseCase buscarPagamentoPorIdUseCase;
     private final BuscarPagamentoUseCase buscarPagamentoUseCase;
     private final AtualizarPagamentoUseCase atualizarPagamentoUseCase;
+    private final DeletarPagamentoUseCase deletarPagamentoUseCase;
     private final PagamentoControllerMapper mapper;
 
     @PostMapping("/registrar")
@@ -96,6 +99,15 @@ public class PagamentoController {
 
         PagamentoResponse response = mapper.toResponse(atualizarPagamentoUseCase.atualizarPagamento(id, input, usuarioId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarPagamento(@PathVariable UUID id) {
+
+        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+
+        deletarPagamentoUseCase.deletarPagamento(id, usuarioId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }
