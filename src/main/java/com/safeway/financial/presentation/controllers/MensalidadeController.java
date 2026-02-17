@@ -61,7 +61,7 @@ public class MensalidadeController {
         Page<MensalidadeResponse> response = buscarMensalidadesUseCase
                 .executar(input, pageable).map(mapper::toResponse);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{id}")
@@ -83,7 +83,7 @@ public class MensalidadeController {
         Page<MensalidadeResponse> response = buscarMensalidadesUseCase
                 .executar(input, pageable).map(mapper::toResponse);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PatchMapping("/pagar/{id}")
