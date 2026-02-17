@@ -70,13 +70,13 @@ public class PagamentoController {
             @RequestParam(required = false) Double valorMinimo,
             @RequestParam(required = false) Double valorMaximo,
             @RequestParam(required = false) String descricao,
-            @PageableDefault(sort = "dataPagamento", direction = Sort.Direction.ASC) Pageable pageableq) {
+            @PageableDefault(sort = "dataPagamento", direction = Sort.Direction.ASC) Pageable pageable) {
 
         UUID usuarioId = UUID.randomUUID(); // TODO: Corrigir a buscar do id do usuario
 
         var input = new BuscarPagamentoUseCase.Input(usuarioId, dataInicio, dataFim, valorMinimo, valorMaximo, descricao);
 
-        Page<PagamentoResponse> response = buscarPagamentoUseCase.buscarPagamentos(input, pageableq).map(mapper::toResponse);
+        Page<PagamentoResponse> response = buscarPagamentoUseCase.buscarPagamentos(input, pageable).map(mapper::toResponse);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
