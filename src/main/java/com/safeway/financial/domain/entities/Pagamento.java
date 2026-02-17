@@ -34,11 +34,23 @@ public class Pagamento {
         return dataPagamento;
     }
 
+    public void setDataPagamento(LocalDate dataPagamento) {
+        this.dataPagamento = dataPagamento;
+    }
+
     public Double getValorPagamento() {
         return valorPagamento;
     }
 
+    public void setValorPagamento(Double valorPagamento) {
+        this.valorPagamento = valorPagamento;
+    }
+
     public String getDescricao() {
         return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 }

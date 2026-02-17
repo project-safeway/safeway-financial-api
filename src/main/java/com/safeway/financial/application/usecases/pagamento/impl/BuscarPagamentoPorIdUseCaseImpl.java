@@ -29,6 +29,11 @@ public class BuscarPagamentoPorIdUseCaseImpl implements BuscarPagamentoPorIdUseC
                     return new PagamentoNotFoundException("Erro ao tentar buscar o pagamento");
                 });
 
+        if (!pagamento.getUsuarioId().equals(usuarioId)) {
+            log.error("O pagamento de id {} não pertence ao usuário de id {}", pagamentoId, usuarioId);
+            throw new PagamentoNotFoundException("Erro ao tentar buscar o pagamento");
+        }
+
         return converterParaDTO(pagamento);
     }
 
