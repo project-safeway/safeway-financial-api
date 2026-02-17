@@ -1,8 +1,10 @@
 package com.safeway.financial.application.usecases.pagamento.impl;
 
 import com.safeway.financial.application.dto.PagamentoDTO;
+import com.safeway.financial.application.ports.output.UsuarioGateway;
 import com.safeway.financial.application.usecases.pagamento.RegistrarPagamentoUseCase;
 import com.safeway.financial.domain.entities.Pagamento;
+import com.safeway.financial.domain.exceptions.OperationNotAlloyedException;
 import com.safeway.financial.domain.repositories.PagamentoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +18,16 @@ import java.util.UUID;
 public class RegistrarPagamentoUseCaseImpl implements RegistrarPagamentoUseCase {
 
     private final PagamentoRepository pagamentoRepository;
+    private final UsuarioGateway usuarioGateway;
 
     @Override
     public PagamentoDTO registrarNovoPagamento(Input input, UUID usuarioId) {
         log.info("Registrando novo pagamento: {}", input);
+
+        if (!usuarioGateway.estaAtivo(usuarioId)) {
+            log.error("Usuário de id {} não está ativo.", usuarioId);
+            throw new OperationNotAlloyedException("Usuário não está ativo.");
+        }
 
         validarEstrutura(input);
 
@@ -55,6 +63,7 @@ public class RegistrarPagamentoUseCaseImpl implements RegistrarPagamentoUseCase 
     private PagamentoDTO converterParaDTO(Pagamento pagamento) {
         return new PagamentoDTO(
                 pagamento.getId(),
+                pagamento.getUsuarioId(),
                 pagamento.getDataPagamento(),
                 pagamento.getValorPagamento(),
                 pagamento.getDescricao()
