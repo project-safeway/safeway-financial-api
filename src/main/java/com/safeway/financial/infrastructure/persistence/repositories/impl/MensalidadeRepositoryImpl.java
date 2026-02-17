@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,6 +36,20 @@ public class MensalidadeRepositoryImpl implements MensalidadeRepository {
     public Optional<Mensalidade> buscarPorId(UUID id) {
         return mensalidadeJpaRepository.findById(id)
                 .map(mapper::toDomain);
+    }
+
+    @Override
+    public Boolean existeMensalidadesMes(UUID alunoId, LocalDate dataInicio, LocalDate dataFim) {
+        return mensalidadeJpaRepository
+                .existsByAlunoIdAndDataVencimentoBetween(alunoId, dataInicio, dataFim);
+    }
+
+    @Override
+    public void salvarTodos(List<Mensalidade> mensalidades) {
+        List<MensalidadeEntity> entities = mensalidades.stream()
+                .map(mapper::toEntity)
+                .toList();
+        mensalidadeJpaRepository.saveAll(entities);
     }
 
     @Override
