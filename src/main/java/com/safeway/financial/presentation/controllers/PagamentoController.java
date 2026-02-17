@@ -1,6 +1,7 @@
 package com.safeway.financial.presentation.controllers;
 
 import com.safeway.financial.application.dto.PagamentoDTO;
+import com.safeway.financial.application.usecases.pagamento.AtualizarPagamentoUseCase;
 import com.safeway.financial.application.usecases.pagamento.BuscarPagamentoPorIdUseCase;
 import com.safeway.financial.application.usecases.pagamento.BuscarPagamentoUseCase;
 import com.safeway.financial.application.usecases.pagamento.RegistrarPagamentoUseCase;
@@ -17,6 +18,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +38,7 @@ public class PagamentoController {
     private final RegistrarPagamentoUseCase registrarPagamentoUseCase;
     private final BuscarPagamentoPorIdUseCase buscarPagamentoPorIdUseCase;
     private final BuscarPagamentoUseCase buscarPagamentoUseCase;
+    private final AtualizarPagamentoUseCase atualizarPagamentoUseCase;
     private final PagamentoControllerMapper mapper;
 
     @PostMapping("/registrar")
@@ -77,6 +80,21 @@ public class PagamentoController {
         var input = new BuscarPagamentoUseCase.Input(usuarioId, dataInicio, dataFim, valorMinimo, valorMaximo, descricao);
 
         Page<PagamentoResponse> response = buscarPagamentoUseCase.buscarPagamentos(input, pageable).map(mapper::toResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<PagamentoResponse> atualizarPagamento(@PathVariable UUID id, @RequestBody PagamentoRequest request) {
+
+        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+
+        var input = new AtualizarPagamentoUseCase.Input(
+                request.dataPagamento(),
+                request.valorPagamento(),
+                request.descricao()
+        );
+
+        PagamentoResponse response = mapper.toResponse(atualizarPagamentoUseCase.atualizarPagamento(id, input, usuarioId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
