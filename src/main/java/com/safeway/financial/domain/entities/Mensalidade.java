@@ -68,6 +68,12 @@ public class Mensalidade {
                 StatusPagamento.PENDENTE.equals(this.status);
     }
 
+    public void marcarComoAtrasada() {
+        if (estaAtrasada()) {
+            this.status = StatusPagamento.ATRASADO;
+        }
+    }
+
     public void marcarComoCancelada() {
         this.status = StatusPagamento.CANCELADO;
     }

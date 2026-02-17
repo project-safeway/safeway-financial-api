@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -46,5 +48,31 @@ public class AlunoGatewayAdapter implements AlunoGateway {
     @Override
     public boolean estaAtivo(UUID id) {
         return buscarPorId(id).map(AlunoData::ativo).orElse(false);
+    }
+
+    @Override
+    public List<AlunoData> buscarTodosAtivos() {
+        try {
+            log.debug("Buscando todos os alunos ativos no serviço principal");
+
+            List<AlunoClient.AlunoResponse> response = alunoClient.buscarTodosAtivos();
+
+            return response.stream()
+                    .map(aluno -> new AlunoData(
+                            aluno.id(),
+                            aluno.nome(),
+                            aluno.valorMensalidade(),
+                            aluno.diaVencimento(),
+                            aluno.ativo(),
+                            aluno.usuario().idUsuario()
+                    ))
+                    .toList();
+        } catch (FeignException.NotFound ex) {
+            log.warn("Nenhum aluno ativo encontrado no serviço principal");
+            return new ArrayList<>();
+        } catch (Exception ex) {
+            log.error("Erro ao buscar alunos no serviço principal", ex);
+            throw new RuntimeException("Erro ao comunicar com o serviço principal", ex);
+        }
     }
 }
