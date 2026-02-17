@@ -4,18 +4,18 @@ import com.safeway.financial.application.ports.output.AlunoGateway;
 import com.safeway.financial.domain.entities.Mensalidade;
 import com.safeway.financial.domain.enums.StatusPagamento;
 import com.safeway.financial.domain.repositories.MensalidadeRepository;
-import com.safeway.financial.domain.specifications.MensalidadeSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -35,22 +35,32 @@ public class MensalidadeScheduler {
         LocalDate fimMes = data.withDayOfMonth(data.lengthOfMonth());
 
         List<AlunoGateway.AlunoData> alunosAtivos = alunoGateway.buscarTodosAtivos();
-        Integer contagemMensalidadeGeradas = 0;
+        Set<UUID> idsComMensalidade = mensalidadeRepository.buscarIdsAlunosComMensalidadeNoPeriodo(inicioMes, fimMes);
+
+        List<Mensalidade> mensalidadesParaCriar = new ArrayList<>();
 
         for (AlunoGateway.AlunoData aluno : alunosAtivos) {
-            boolean jaExiste = mensalidadeRepository
-                    .existeMensalidadesMes(aluno.id(), inicioMes, fimMes);
-
-            if (!jaExiste) {
+            if (!idsComMensalidade.contains(aluno.id())) {
                 LocalDate dataVencimento = calcularDataVencimento(data, aluno.diaVencimento());
 
-                Mensalidade mensalidade = new Mensalidade(null, aluno.id(), dataVencimento, aluno.valorMensalidade(), StatusPagamento.PENDENTE, null, null);
-                mensalidadeRepository.salvar(mensalidade);
-                contagemMensalidadeGeradas++;
+                Mensalidade mensalidade = new Mensalidade(
+                        null, aluno.id(),
+                        dataVencimento, aluno.valorMensalidade(),
+                        StatusPagamento.PENDENTE,
+                        null, null);
+
+                mensalidadesParaCriar.add(mensalidade);
             }
         }
 
-        log.info("Finalizada geração de mensalidades. Total de mensalidades geradas: {}", contagemMensalidadeGeradas);
+        if (!mensalidadesParaCriar.isEmpty()) {
+            // WARN: Ele vai funcionar normal, mas em casos que possamos ter mais de uma instacia do scheduler rodando, pode gerar mensalidades duplicadas
+            // A melhor forma de evitar isso seria com uma constraint, mas temos que decidir a regra se ele pode criar mais de uma pra mensalidade pra mesma data
+            mensalidadeRepository.salvarTodos(mensalidadesParaCriar);
+            log.info("Finalizada geração de mensalidades. Total de mensalidades geradas: {}", mensalidadesParaCriar.size());
+        } else {
+            log.info("Nenhuma mensalidade nova foi gerada, todos os alunos já possuem mensalidade para o período.");
+        }
     }
 
     public LocalDate calcularDataVencimento(LocalDate mesReferencia, Integer diaVencimento) {
@@ -67,24 +77,8 @@ public class MensalidadeScheduler {
         log.info("Iniciando atualizar status mensalidades");
         LocalDate data = LocalDate.now();
 
-        MensalidadeSpecification spec = MensalidadeSpecification.builder()
-                .dataInicio(data)
-                .dataFim(data)
-                .status(List.of(StatusPagamento.PENDENTE))
-                .build();
-
-        Pageable pageable = Pageable.unpaged();
-        Page<Mensalidade> response = mensalidadeRepository.buscar(spec, pageable);
-
-        // TODO: Avaliar uma forma melhor de fazer isso, pois do jeito atual nós carregamos tudo em memória, eu acho
-        // Com pouca carga isso é ok, mas com uma carga maior isso pode ser um problema
-        response.getContent().forEach(mensalidade -> {
-            mensalidade.marcarComoAtrasada();
-            log.info("Mensalidade ID {} marcada como ATRASADO", mensalidade.getId());
-        });
-
-        mensalidadeRepository.salvarTodos(response.getContent());
-        log.info("Finalizada atualização de status de mensalidades. Total de mensalidades atualizadas: {}", response.getContent().size());
+        Integer totalAtualizado = mensalidadeRepository.atualizarStatusParaAtrasado(data);
+        log.info("Finalizada atualização de status de mensalidades. Total de mensalidades atualizadas: {}", totalAtualizado);
     }
 
 }
