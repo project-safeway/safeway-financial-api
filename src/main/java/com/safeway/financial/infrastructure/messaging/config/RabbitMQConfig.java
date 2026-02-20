@@ -26,17 +26,20 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(messageConverter());
+        rabbitTemplate.setMessageConverter(messageConverter);
         return rabbitTemplate;
     }
 
     @Bean
-    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
-        factory.setMessageConverter(messageConverter());
+        factory.setMessageConverter(messageConverter);
+        factory.setDefaultRequeueRejected(false);
+        factory.setConcurrentConsumers(3);
+        factory.setMaxConcurrentConsumers(10);
         return factory;
     }
 
@@ -47,7 +50,7 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue alunoCriadoDLQ() {
-        return QueueBuilder.durable(rabbitMQProperties.getQueues().getAlunoCriado()).build();
+        return QueueBuilder.durable(rabbitMQProperties.getQueues().getAlunoCriado() + ".dlq").build();
     }
 
     @Bean
@@ -63,20 +66,25 @@ public class RabbitMQConfig {
                 .with("aluno.criado.dlq");
     }
 
-    @Bean
-    public Queue alunoCriadoQueue() {
-        return QueueBuilder.durable(rabbitMQProperties.getQueues().getAlunoCriado())
+    private Queue createQueueWithDLQ(String queueName, String dlqRoutingKey) {
+        return QueueBuilder.durable(queueName)
                 .withArgument("x-dead-letter-exchange", rabbitMQProperties.getExchanges().getAluno() + ".dlx")
-                .withArgument("x-dead-letter-routing-key", "aluno.criado.dlq")
+                .withArgument("x-dead-letter-routing-key", dlqRoutingKey)
                 .build();
     }
 
     @Bean
+    public Queue alunoCriadoQueue() {
+        return createQueueWithDLQ(
+                rabbitMQProperties.getQueues().getAlunoCriado(),
+                "aluno.criado.dlq");
+    }
+
+    @Bean
     public Queue alunoAtualizadoQueue() {
-        return QueueBuilder.durable(rabbitMQProperties.getQueues().getAlunoAtualizado())
-                .withArgument("x-dead-letter-exchange", rabbitMQProperties.getExchanges().getAluno() + ".dlx")
-                .withArgument("x-dead-letter-routing-key", "aluno.atualizado.dlq")
-                .build();
+        return createQueueWithDLQ(
+                rabbitMQProperties.getQueues().getAlunoAtualizado(),
+                "aluno.atualizado.dlq");
     }
 
     @Bean
