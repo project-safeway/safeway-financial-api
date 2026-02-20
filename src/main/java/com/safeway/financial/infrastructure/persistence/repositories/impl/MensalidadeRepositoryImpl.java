@@ -53,6 +53,13 @@ public class MensalidadeRepositoryImpl implements MensalidadeRepository {
     }
 
     @Override
+    public List<Mensalidade> buscarPorAlunoId(UUID alunoId) {
+        return mensalidadeJpaRepository.findByAlunoId(alunoId).stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
+
+    @Override
     public Optional<Mensalidade> buscarPorId(UUID id) {
         return mensalidadeJpaRepository.findById(id)
                 .map(mapper::toDomain);

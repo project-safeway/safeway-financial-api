@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @FeignClient(
         name = "safeway-core",
-        url = "${safeway.core.url:http://localhostZ:8080}"
+        url = "${safeway.core.url:http://localhost:8080}"
 )
 public interface AlunoClient {
 
