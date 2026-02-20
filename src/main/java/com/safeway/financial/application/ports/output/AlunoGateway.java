@@ -9,6 +9,7 @@ public interface AlunoGateway {
     Optional<AlunoData> buscarPorId(UUID id);
     boolean estaAtivo(UUID id);
     List<AlunoData> buscarTodosAtivos();
+    List<AlunoData> buscarPorIdEmLote(List<UUID> ids);
 
     record AlunoData(
             UUID id,

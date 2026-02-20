@@ -75,4 +75,30 @@ public class AlunoGatewayAdapter implements AlunoGateway {
             throw new RuntimeException("Erro ao comunicar com o serviço principal", ex);
         }
     }
+
+    @Override
+    public List<AlunoData> buscarPorIdEmLote(List<UUID> ids) {
+        try {
+            log.debug("Buscando dados dos alunos em lote - IDs: {}", ids);
+
+            List<AlunoClient.AlunoResponse> response = alunoClient.buscarPorIdEmLote(ids);
+
+            return response.stream()
+                    .map(aluno -> new AlunoData(
+                            aluno.id(),
+                            aluno.nome(),
+                            aluno.valorMensalidade(),
+                            aluno.diaVencimento(),
+                            aluno.ativo(),
+                            aluno.usuario().idUsuario()
+                    ))
+                    .toList();
+        } catch (FeignException.NotFound ex) {
+            log.warn("Nenhum aluno encontrado para os IDs fornecidos no serviço principal");
+            return new ArrayList<>();
+        } catch (Exception ex) {
+            log.error("Erro ao buscar alunos em lote no serviço principal", ex);
+            throw new RuntimeException("Erro ao comunicar com o serviço principal", ex);
+        }
+    }
 }
