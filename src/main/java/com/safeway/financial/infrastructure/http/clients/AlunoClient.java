@@ -1,5 +1,6 @@
 package com.safeway.financial.infrastructure.http.clients;
 
+import jakarta.websocket.server.PathParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,9 @@ public interface AlunoClient {
 
     @GetMapping("/alunos/ativos")
     List<AlunoResponse> buscarTodosAtivos();
+
+    @GetMapping("/alunos/lote")
+    List<AlunoResponse> buscarPorIdEmLote(@PathParam("ids") List<UUID> ids);
 
     record AlunoResponse(
             UUID id,

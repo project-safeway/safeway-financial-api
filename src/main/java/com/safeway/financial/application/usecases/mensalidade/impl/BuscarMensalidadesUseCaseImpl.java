@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -45,9 +46,7 @@ public class BuscarMensalidadesUseCaseImpl implements BuscarMensalidadesUseCase 
                 mensalidadesPage.getNumberOfElements(),
                 mensalidadesPage.getTotalElements());
 
-        //
-//        Map<UUID, AlunoGateway.AlunoData> alunosCache = buscarAlunosEmLote(mensalidadesPage);
-        Map<UUID, AlunoGateway.AlunoData> alunosCache = new HashMap<>();
+        Map<UUID, AlunoGateway.AlunoData> alunosCache = buscarAlunosEmLote(mensalidadesPage);
 
         return mensalidadesPage.map(mensalidade -> converterParaDTO(mensalidade, alunosCache));
     }
@@ -56,14 +55,12 @@ public class BuscarMensalidadesUseCaseImpl implements BuscarMensalidadesUseCase 
     private Map<UUID, AlunoGateway.AlunoData> buscarAlunosEmLote(Page<Mensalidade> mensalidadesPage) {
         Map<UUID, AlunoGateway.AlunoData> cache = new HashMap<>();
 
-        mensalidadesPage.getContent().forEach(mensalidade -> {
-            UUID alunoId = mensalidade.getAlunoId();
+        List<UUID> alunoIds = mensalidadesPage.getContent().stream()
+                .map(Mensalidade::getAlunoId)
+                .distinct()
+                .toList();
 
-            if (!cache.containsKey(alunoId)) {
-                alunoGateway.buscarPorId(alunoId)
-                        .ifPresent(aluno -> cache.put(alunoId, aluno));
-            }
-        });
+        alunoGateway.buscarPorIdEmLote(alunoIds).forEach(alunoData -> cache.put(alunoData.id(), alunoData));
 
         return cache;
     }
