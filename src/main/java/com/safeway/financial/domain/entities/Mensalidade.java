@@ -84,4 +84,16 @@ public class Mensalidade {
             this.status = StatusPagamento.PAGO;
         }
     }
+
+    public void alterarValorMensalidade(Double valorMensalidade) {
+        this.valorMensalidade = valorMensalidade;
+        if (valorMensalidade.equals(valorPago)) {
+            this.status = StatusPagamento.PAGO;
+        }
+    }
+
+    public void alterarDataVencimento(LocalDate dataVencimento) {
+        this.dataVencimento = dataVencimento;
+        marcarComoAtrasada(); // Não precisa verificar se já está atrasada, pois o método marcarComoAtrasada() já faz essa verificação
+    }
 }

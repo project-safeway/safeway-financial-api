@@ -16,6 +16,7 @@ public interface MensalidadeRepository {
     List<Mensalidade> salvarTodos(List<Mensalidade> mensalidades);
     Mensalidade salvar(Mensalidade mensalidade);
     Page<Mensalidade> buscar(MensalidadeSpecification spec, Pageable pageable);
+    List<Mensalidade> buscarPorAlunoId(UUID alunoId);
     Optional<Mensalidade> buscarPorId(UUID id);
     Set<UUID> buscarIdsAlunosComMensalidadeNoPeriodo(LocalDate inicio, LocalDate fim);
     int atualizarStatusParaAtrasado(LocalDate dataLimite);
