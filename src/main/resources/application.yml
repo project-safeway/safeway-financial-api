@@ -1,0 +1,75 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: safeway-financial
+
+  datasource:
+    url: jdbc:h2:mem:safeway_financial;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    username: ${DB_USER:sa}
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    virtual-host: ${RABBITMQ_VHOST:/}
+
+    listener:
+      simple:
+        acknowledge-mode: auto
+        prefetch: 10
+        retry:
+          enabled: true
+          initial-interval: 1000
+          max-attempts: 3
+          max-interval: 10000
+          multiplier: 2
+
+    template:
+      retry:
+        enabled: true
+        initial-interval: 1000
+        max-attempts: 3
+
+rabbitmq:
+  exchanges:
+    aluno: aluno.exchange
+
+  queues:
+    aluno-criado: financeiro.aluno.criado.queue
+    aluno-atualizado: financeiro.aluno.atualizado.queue
+    aluno-inativado: financeiro.aluno.inativado.queue
+
+  routing-keys:
+    aluno-criado: aluno.criado
+    aluno-atualizado: aluno.atualizado
+    aluno-inativado: aluno.inativado
+
+jwt:
+  private:
+    key: ${JWT_PRIVATE_KEY:mysecretkey}
+  public:
+    key: ${JWT_PUBLIC_KEY:mysecretkey}
+
+safeway:
+  core:
+    url: ${SAFEWAY_CORE_URL:http://localhost:8080}
+
+  service:
+    auth:
+      username: ${SAFEWAY_AUTH_USERNAME:admin}
+      password: ${SAFEWAY_AUTH_PASSWORD:password}

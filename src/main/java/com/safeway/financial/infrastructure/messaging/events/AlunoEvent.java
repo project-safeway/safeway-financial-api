@@ -1,0 +1,18 @@
+package com.safeway.financial.infrastructure.messaging.events;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+public record AlunoEvent(
+        UUID id,
+        UUID alunoId,
+        String nome,
+        Double valorMensalidade,
+        Integer diaVencimento,
+        Boolean ativo,
+        String tipo,
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+        LocalDateTime timestamp
+) {}
