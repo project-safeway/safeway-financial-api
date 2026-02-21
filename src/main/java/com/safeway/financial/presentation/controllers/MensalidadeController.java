@@ -1,5 +1,6 @@
 package com.safeway.financial.presentation.controllers;
 
+import com.safeway.financial.application.ports.input.AuthenticationPort;
 import com.safeway.financial.application.usecases.mensalidade.AplicarDescontoUseCase;
 import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadePorIdUseCase;
 import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadesUseCase;
@@ -38,6 +39,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MensalidadeController {
 
+    private final AuthenticationPort authenticationPort;
     private final BuscarMensalidadesUseCase buscarMensalidadesUseCase;
     private final BuscarMensalidadePorIdUseCase buscarMensalidadePorIdUseCase;
     private final PagarMensalidadeUseCase pagarMensalidadeUseCase;
@@ -54,7 +56,7 @@ public class MensalidadeController {
             @RequestParam(required = false)List<StatusPagamento> status,
             @PageableDefault(sort = "dataVencimento", direction = Sort.Direction.ASC)Pageable pageable) {
 
-        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+        UUID usuarioId = authenticationPort.getCurrentUserId();
 
         var input = new BuscarMensalidadesUseCase.Input(alunoId, dataInicio, dataFim, status, usuarioId);
 
@@ -67,7 +69,7 @@ public class MensalidadeController {
     @GetMapping("/{id}")
     public ResponseEntity<MensalidadeResponse> buscarMensalidadePorId(@PathVariable UUID id) {
 
-        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+        UUID usuarioId = authenticationPort.getCurrentUserId();
 
         MensalidadeResponse response = mapper.toResponse(buscarMensalidadePorIdUseCase.buscarMensalidadePorId(id, usuarioId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -76,7 +78,7 @@ public class MensalidadeController {
     @GetMapping("/pendentes")
     public ResponseEntity<Page<MensalidadeResponse>> buscarPendentes(@PageableDefault(sort = "dataVencimento", direction = Sort.Direction.ASC)Pageable pageable) {
 
-        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+        UUID usuarioId = authenticationPort.getCurrentUserId();
 
         var input = new BuscarMensalidadesUseCase.Input(null, null, null, List.of(StatusPagamento.PENDENTE, StatusPagamento.ATRASADO), usuarioId);
 
@@ -89,7 +91,7 @@ public class MensalidadeController {
     @PatchMapping("/pagar/{id}")
     public ResponseEntity<MensalidadeResponse> registrarPagamento(@PathVariable UUID id) {
 
-        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+        UUID usuarioId = authenticationPort.getCurrentUserId();
 
         MensalidadeResponse response = mapper.toResponse(pagarMensalidadeUseCase.registrarPagamento(id, usuarioId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -98,7 +100,7 @@ public class MensalidadeController {
     @PatchMapping("/cancelar/{id}")
     public ResponseEntity<MensalidadeResponse> cancelarMensalidade(@PathVariable UUID id) {
 
-        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+        UUID usuarioId = authenticationPort.getCurrentUserId();
 
         MensalidadeResponse response = mapper.toResponse(cancelarMensalidadeUseCase.cancelarMensalidade(id, usuarioId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -107,7 +109,7 @@ public class MensalidadeController {
     @PatchMapping("/desconto/{id}")
     public ResponseEntity<MensalidadeResponse> aplicarDesconto(@PathVariable UUID id, @RequestParam Double valorDesconto) {
 
-        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+        UUID usuarioId = authenticationPort.getCurrentUserId();
 
         MensalidadeResponse response = mapper.toResponse(aplicarDescontoUseCase.aplicarDesconto(id, valorDesconto, usuarioId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -115,7 +117,8 @@ public class MensalidadeController {
 
     @PostMapping("/criar")
     public ResponseEntity<MensalidadeResponse> criarMensalidade(@RequestBody MensalidadeRequest request) {
-        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+
+        UUID usuarioId = authenticationPort.getCurrentUserId();
 
         var input = new CriarMensalidadeUseCase.Input(
                 request.alunoId(),

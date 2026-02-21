@@ -1,6 +1,7 @@
 package com.safeway.financial.presentation.controllers;
 
 import com.safeway.financial.application.dto.PagamentoDTO;
+import com.safeway.financial.application.ports.input.AuthenticationPort;
 import com.safeway.financial.application.usecases.pagamento.AtualizarPagamentoUseCase;
 import com.safeway.financial.application.usecases.pagamento.BuscarPagamentoPorIdUseCase;
 import com.safeway.financial.application.usecases.pagamento.BuscarPagamentoUseCase;
@@ -37,6 +38,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PagamentoController {
 
+    private final AuthenticationPort authenticationPort;
     private final RegistrarPagamentoUseCase registrarPagamentoUseCase;
     private final BuscarPagamentoPorIdUseCase buscarPagamentoPorIdUseCase;
     private final BuscarPagamentoUseCase buscarPagamentoUseCase;
@@ -47,7 +49,7 @@ public class PagamentoController {
     @PostMapping("/registrar")
     public ResponseEntity<PagamentoResponse> registrarPagamento(@RequestBody PagamentoRequest request) {
 
-        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+        UUID usuarioId = authenticationPort.getCurrentUserId();
 
         var input = new RegistrarPagamentoUseCase.Input(
                 request.dataPagamento(),
@@ -61,7 +63,8 @@ public class PagamentoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PagamentoResponse> obterPagamentoPorId(@PathVariable UUID id) {
-        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+
+        UUID usuarioId = authenticationPort.getCurrentUserId();
 
         PagamentoDTO pagamento = buscarPagamentoPorIdUseCase.buscarPagamentoPorId(id, usuarioId);
 
@@ -78,7 +81,7 @@ public class PagamentoController {
             @RequestParam(required = false) String descricao,
             @PageableDefault(sort = "dataPagamento", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        UUID usuarioId = UUID.randomUUID(); // TODO: Corrigir a buscar do id do usuario
+        UUID usuarioId = authenticationPort.getCurrentUserId();
 
         var input = new BuscarPagamentoUseCase.Input(usuarioId, dataInicio, dataFim, valorMinimo, valorMaximo, descricao);
 
@@ -89,7 +92,7 @@ public class PagamentoController {
     @PatchMapping("/{id}")
     public ResponseEntity<PagamentoResponse> atualizarPagamento(@PathVariable UUID id, @RequestBody PagamentoRequest request) {
 
-        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+        UUID usuarioId = authenticationPort.getCurrentUserId();
 
         var input = new AtualizarPagamentoUseCase.Input(
                 request.dataPagamento(),
@@ -104,7 +107,7 @@ public class PagamentoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarPagamento(@PathVariable UUID id) {
 
-        UUID usuarioId = UUID.randomUUID(); //TODO: Corrigir a buscar do id do usuario
+        UUID usuarioId = authenticationPort.getCurrentUserId();
 
         deletarPagamentoUseCase.deletarPagamento(id, usuarioId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
