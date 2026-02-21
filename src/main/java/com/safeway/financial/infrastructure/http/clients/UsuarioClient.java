@@ -8,6 +8,7 @@ import java.util.UUID;
 
 @FeignClient(
         name = "safeway-core",
+        contextId = "usuarioClient",
         url = "${safeway.core.url:http://localhost:8080}"
 )
 public interface UsuarioClient {
