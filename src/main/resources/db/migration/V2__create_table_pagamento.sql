@@ -1,9 +1,9 @@
-CREATE TABLE mensalidades(
+CREATE TABLE pagamentos(
     id CHAR(36) PRIMARY KEY,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     fk_usuario CHAR(36) NOT NULL,
     data_pagamento DATE NOT NULL,
     valor_pagamento DECIMAL(10, 2) NOT NULL,
-    descricao VARCHAR(255),
+    descricao VARCHAR(255)
 );

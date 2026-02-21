@@ -68,3 +68,8 @@ jwt:
 safeway:
   core:
     url: ${SAFEWAY_CORE_URL:http://localhost:8080}
+
+  service:
+    auth:
+      username: ${SAFEWAY_AUTH_USERNAME:admin}
+      password: ${SAFEWAY_AUTH_PASSWORD:password}
