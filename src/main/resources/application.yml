@@ -59,6 +59,12 @@ rabbitmq:
     aluno-atualizado: aluno.atualizado
     aluno-inativado: aluno.inativado
 
+jwt:
+  private:
+    key: ${JWT_PRIVATE_KEY:mysecretkey}
+  public:
+    key: ${JWT_PUBLIC_KEY:mysecretkey}
+
 safeway:
   core:
     url: ${SAFEWAY_CORE_URL:http://localhost:8080}
