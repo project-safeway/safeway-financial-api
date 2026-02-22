@@ -1,6 +1,7 @@
 package com.safeway.financial.application.usecases.pagamento.impl;
 
 import com.safeway.financial.application.dto.PagamentoDTO;
+import com.safeway.financial.application.ports.output.UsuarioGateway;
 import com.safeway.financial.application.usecases.pagamento.AtualizarPagamentoUseCase;
 import com.safeway.financial.application.usecases.pagamento.BuscarPagamentoPorIdUseCase;
 import com.safeway.financial.domain.entities.Pagamento;
@@ -18,9 +19,15 @@ public class AtualizarPagamentoUseCaseImpl implements AtualizarPagamentoUseCase 
 
     private final PagamentoRepository pagamentoRepository;
     private final BuscarPagamentoPorIdUseCase buscarPagamentoPorIdUseCase;
+    private final UsuarioGateway usuarioGateway;
 
     @Override
     public PagamentoDTO atualizarPagamento(UUID pagamentoId, Input input, UUID usuarioId) {
+        if (!usuarioGateway.estaAtivo(usuarioId)) {
+            log.error("Usuário com id: {} está inativo. Operação não permitida.", usuarioId);
+            throw new RuntimeException("Usuário inativo. Não é possível atualizar o pagamento.");
+        }
+
         log.info("Iniciando atualizar pagamento: {}", input);
 
         PagamentoDTO dto = buscarPagamentoPorIdUseCase.buscarPagamentoPorId(pagamentoId, usuarioId);

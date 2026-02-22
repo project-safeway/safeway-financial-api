@@ -1,6 +1,7 @@
 package com.safeway.financial.application.usecases.pagamento.impl;
 
 import com.safeway.financial.application.dto.PagamentoDTO;
+import com.safeway.financial.application.ports.output.UsuarioGateway;
 import com.safeway.financial.application.usecases.pagamento.BuscarPagamentoUseCase;
 import com.safeway.financial.domain.entities.Pagamento;
 import com.safeway.financial.domain.repositories.PagamentoRepository;
@@ -17,9 +18,16 @@ import org.springframework.stereotype.Service;
 public class BuscarPagamentoUseCaseImpl implements BuscarPagamentoUseCase {
 
     private final PagamentoRepository pagamentoRepository;
+    private final UsuarioGateway usuarioGateway;
 
     @Override
     public Page<PagamentoDTO> buscarPagamentos(Input input, Pageable pageable) {
+
+        if (!usuarioGateway.estaAtivo(input.usuarioId())) {
+            log.error("Usuário com id: {} está inativo. Operação não permitida.", input.usuarioId());
+            throw new RuntimeException("Usuário inativo. Não é possível buscar os pagamentos.");
+        }
+
         log.info("Buscando pagamentos - Filtros: {}, Usuário: {}", input, input.usuarioId());
 
         PagamentoSpecification spec = PagamentoSpecification.builder()

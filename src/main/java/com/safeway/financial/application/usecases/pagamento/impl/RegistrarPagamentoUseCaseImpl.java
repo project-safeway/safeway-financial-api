@@ -26,7 +26,7 @@ public class RegistrarPagamentoUseCaseImpl implements RegistrarPagamentoUseCase 
 
         if (!usuarioGateway.estaAtivo(usuarioId)) {
             log.error("Usuário de id {} não está ativo.", usuarioId);
-            throw new OperationNotAlloyedException("Usuário não está ativo.");
+            throw new OperationNotAlloyedException("Usuário inativo. Não é possível registrar o pagamento.");
         }
 
         validarEstrutura(input);
