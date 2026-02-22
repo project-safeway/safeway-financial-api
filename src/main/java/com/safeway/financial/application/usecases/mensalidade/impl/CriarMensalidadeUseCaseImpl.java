@@ -2,6 +2,7 @@ package com.safeway.financial.application.usecases.mensalidade.impl;
 
 import com.safeway.financial.application.dto.MensalidadeDTO;
 import com.safeway.financial.application.ports.output.AlunoGateway;
+import com.safeway.financial.application.ports.output.UsuarioGateway;
 import com.safeway.financial.application.usecases.mensalidade.CriarMensalidadeUseCase;
 import com.safeway.financial.domain.entities.Mensalidade;
 import com.safeway.financial.domain.exceptions.AlunoNotFoundException;
@@ -20,14 +21,15 @@ public class CriarMensalidadeUseCaseImpl implements CriarMensalidadeUseCase {
 
     private final MensalidadeRepository mensalidadeRepository;
     private final AlunoGateway alunoGateway;
+    private final UsuarioGateway usuarioGateway;
 
     @Override
     public MensalidadeDTO criarNovaMensalidade(Input input, UUID usuarioId) {
         log.info("Criando nova mensalidade para alunoId: {}", input.alunoId());
 
-        if (input.alunoId() == null) {
-            log.error("ID do aluno é nulo. Não é possível criar mensalidade.");
-            throw new IllegalArgumentException("O ID do aluno é obrigatório para criar uma mensalidade.");
+        if (!usuarioGateway.estaAtivo(usuarioId)) {
+            log.error("Usuário com id: {} está inativo. Operação não permitida.", usuarioId);
+            throw new OperationNotAlloyedException("Usuário inativo. Não é possível criar mensalidade.");
         }
 
         AlunoGateway.AlunoData alunoData = alunoGateway.buscarPorId(input.alunoId())

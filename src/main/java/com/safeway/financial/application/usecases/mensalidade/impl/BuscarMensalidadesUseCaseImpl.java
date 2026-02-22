@@ -2,6 +2,7 @@ package com.safeway.financial.application.usecases.mensalidade.impl;
 
 import com.safeway.financial.application.dto.MensalidadeDTO;
 import com.safeway.financial.application.ports.output.AlunoGateway;
+import com.safeway.financial.application.ports.output.UsuarioGateway;
 import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadesUseCase;
 import com.safeway.financial.domain.entities.Mensalidade;
 import com.safeway.financial.domain.repositories.MensalidadeRepository;
@@ -25,10 +26,16 @@ public class BuscarMensalidadesUseCaseImpl implements BuscarMensalidadesUseCase 
 
     private final MensalidadeRepository mensalidadeRepository;
     private final AlunoGateway alunoGateway;
+    private final UsuarioGateway usuarioGateway;
 
     @Override
     @Transactional(readOnly = true)
     public Page<MensalidadeDTO> executar(Input input, Pageable pageable) {
+        if (!usuarioGateway.estaAtivo(input.usuarioId())) {
+            log.error("Usuário com id: {} está inativo. Operação não permitida.", input.usuarioId());
+            throw new IllegalStateException("Usuário inativo. Não é possível buscar as mensalidades.");
+        }
+
         log.info("Buscando mensalidades - Filtros: {}, Página: {}, Tamanho: {}",
                 input, pageable.getPageNumber(), pageable.getPageSize());
 
@@ -51,7 +58,6 @@ public class BuscarMensalidadesUseCaseImpl implements BuscarMensalidadesUseCase 
         return mensalidadesPage.map(mensalidade -> converterParaDTO(mensalidade, alunosCache));
     }
 
-    // TODO: Método precisa ser refatora pra funcionar de fato em lote. Agora ele ta SABOR lote
     private Map<UUID, AlunoGateway.AlunoData> buscarAlunosEmLote(Page<Mensalidade> mensalidadesPage) {
         Map<UUID, AlunoGateway.AlunoData> cache = new HashMap<>();
 

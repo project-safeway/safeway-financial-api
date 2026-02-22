@@ -1,6 +1,7 @@
 package com.safeway.financial.application.usecases.mensalidade.impl;
 
 import com.safeway.financial.application.dto.MensalidadeDTO;
+import com.safeway.financial.application.ports.output.UsuarioGateway;
 import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadePorIdUseCase;
 import com.safeway.financial.application.usecases.mensalidade.PagarMensalidadeUseCase;
 import com.safeway.financial.domain.entities.Mensalidade;
@@ -21,9 +22,15 @@ public class PagarMensalidadeUseCaseImpl implements PagarMensalidadeUseCase {
 
     private final MensalidadeRepository mensalidadeRepository;
     private final BuscarMensalidadePorIdUseCase buscarMensalidadePorIdUseCase;
+    private final UsuarioGateway usuarioGateway;
 
     @Override
     public MensalidadeDTO registrarPagamento(UUID mensalidadeId, UUID usuarioId) {
+        if (!usuarioGateway.estaAtivo(usuarioId)) {
+            log.error("Usuário com id: {} está inativo. Operação não permitida.", usuarioId);
+            throw new MensalidadeWithFinalStatusException("Usuário inativo. Não é possível registrar o pagamento da mensalidade.");
+        }
+
         log.info("Iniciando processo de registrar o pagamento da mensalidade {} do usuário {}", mensalidadeId, usuarioId);
 
         MensalidadeDTO dto = buscarMensalidadePorIdUseCase.buscarMensalidadePorId(mensalidadeId, usuarioId);
