@@ -16,7 +16,7 @@ import java.util.UUID;
 )
 public interface AlunoClient {
 
-    @GetMapping("/alunos/{id}")
+    @GetMapping("/alunos/feign/{id}")
     AlunoResponse buscarAluno(@PathVariable UUID id);
 
     @GetMapping("/alunos/ativos")
