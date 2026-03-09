@@ -61,9 +61,9 @@ rabbitmq:
 
 jwt:
   private:
-    key: ${JWT_PRIVATE_KEY:mysecretkey}
+    key: ${JWT_PRIVATE_KEY:classpath:keys/pri.key}
   public:
-    key: ${JWT_PUBLIC_KEY:mysecretkey}
+    key: ${JWT_PUBLIC_KEY:classpath:keys/pub.key}
 
 safeway:
   core:

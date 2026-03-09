@@ -5,6 +5,7 @@ import com.safeway.financial.application.ports.output.AlunoGateway;
 import com.safeway.financial.application.ports.output.UsuarioGateway;
 import com.safeway.financial.application.usecases.mensalidade.CriarMensalidadeUseCase;
 import com.safeway.financial.domain.entities.Mensalidade;
+import com.safeway.financial.domain.enums.StatusPagamento;
 import com.safeway.financial.domain.exceptions.AlunoNotFoundException;
 import com.safeway.financial.domain.exceptions.OperationNotAlloyedException;
 import com.safeway.financial.domain.repositories.MensalidadeRepository;
@@ -58,7 +59,7 @@ public class CriarMensalidadeUseCaseImpl implements CriarMensalidadeUseCase {
                 input.alunoId(),
                 input.dataVencimento(),
                 input.valorMensalidade(),
-                input.status(),
+                input.status() != null ? input.status() : StatusPagamento.PENDENTE,
                 input.dataPagamento(),
                 input.valorPago()
         );
@@ -68,9 +69,6 @@ public class CriarMensalidadeUseCaseImpl implements CriarMensalidadeUseCase {
     }
 
     private void validarEstrutura(Input input) {
-        if (input.status() == null) {
-            throw new IllegalArgumentException("Status é obrigatório.");
-        }
 
         if (input.dataVencimento() == null) {
             throw new IllegalArgumentException("Data de vencimento é obrigatória.");
@@ -94,6 +92,9 @@ public class CriarMensalidadeUseCaseImpl implements CriarMensalidadeUseCase {
     }
 
     private void validarRegrasDeNegocio(Input input) {
+        if (input.status() == null) {
+            return;
+        }
         switch (input.status()) {
             case PAGO -> {
                 if (input.dataPagamento() == null || input.valorPago() == null) {
