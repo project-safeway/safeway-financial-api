@@ -1,8 +1,8 @@
 package com.safeway.financial.application.usecases.mensalidade.impl;
 
 import com.safeway.financial.application.dto.MensalidadeDTO;
+import com.safeway.financial.application.mappers.MensalidadeApplicationMapper;
 import com.safeway.financial.application.ports.output.AlunoGateway;
-import com.safeway.financial.application.ports.output.UsuarioGateway;
 import com.safeway.financial.application.usecases.mensalidade.CriarMensalidadeUseCase;
 import com.safeway.financial.domain.entities.Mensalidade;
 import com.safeway.financial.domain.enums.StatusPagamento;
@@ -22,16 +22,11 @@ public class CriarMensalidadeUseCaseImpl implements CriarMensalidadeUseCase {
 
     private final MensalidadeRepository mensalidadeRepository;
     private final AlunoGateway alunoGateway;
-    private final UsuarioGateway usuarioGateway;
+    private final MensalidadeApplicationMapper mapper;
 
     @Override
     public MensalidadeDTO criarNovaMensalidade(Input input, UUID usuarioId) {
         log.info("Criando nova mensalidade para alunoId: {}", input.alunoId());
-
-        if (!usuarioGateway.estaAtivo(usuarioId)) {
-            log.error("Usuário com id: {} está inativo. Operação não permitida.", usuarioId);
-            throw new OperationNotAlloyedException("Usuário inativo. Não é possível criar mensalidade.");
-        }
 
         AlunoGateway.AlunoData alunoData = alunoGateway.buscarPorId(input.alunoId())
                 .orElseThrow(() -> {
@@ -40,7 +35,7 @@ public class CriarMensalidadeUseCaseImpl implements CriarMensalidadeUseCase {
                 });
 
         if (!alunoData.usuarioId().equals(usuarioId)) {
-            log.error("Usuário com id: {} não tem permissão para criar mensalidade para alunoId: {}", usuarioId, input.alunoId());
+            log.error("Usuário {} não tem permissão para criar mensalidade para alunoId: {}", usuarioId, input.alunoId());
             throw new OperationNotAlloyedException("Usuário não tem permissão para criar mensalidade para este aluno.");
         }
 
@@ -52,6 +47,7 @@ public class CriarMensalidadeUseCaseImpl implements CriarMensalidadeUseCase {
         validarEstrutura(input);
         validarCoerencia(input);
         validarRegrasDeNegocio(input);
+
         log.info("Validações para criação de mensalidade para alunoId: {} concluídas com sucesso.", input.alunoId());
 
         Mensalidade mensalidade = new Mensalidade(
@@ -65,15 +61,13 @@ public class CriarMensalidadeUseCaseImpl implements CriarMensalidadeUseCase {
         );
 
         Mensalidade mensalidadeSalva = mensalidadeRepository.salvar(mensalidade);
-        return converterParaDTO(mensalidadeSalva, alunoData.nome());
+        return mapper.toDTO(mensalidadeSalva);
     }
 
     private void validarEstrutura(Input input) {
-
         if (input.dataVencimento() == null) {
             throw new IllegalArgumentException("Data de vencimento é obrigatória.");
         }
-
         if (input.valorMensalidade() == null || input.valorMensalidade() <= 0) {
             throw new IllegalArgumentException("Valor da mensalidade deve ser maior que zero.");
         }
@@ -83,43 +77,25 @@ public class CriarMensalidadeUseCaseImpl implements CriarMensalidadeUseCase {
         if (input.valorPago() != null && input.valorPago() < 0) {
             throw new IllegalArgumentException("Valor pago não pode ser negativo.");
         }
-
-        if (input.valorPago() != null &&
-                input.valorMensalidade() != null &&
-                input.valorPago() > input.valorMensalidade()) {
+        if (input.valorPago() != null && input.valorMensalidade() != null
+                && input.valorPago() > input.valorMensalidade()) {
             throw new IllegalArgumentException("Valor pago não pode ser maior que o valor da mensalidade.");
         }
     }
 
     private void validarRegrasDeNegocio(Input input) {
-        if (input.status() == null) {
-            return;
-        }
+        if (input.status() == null) return;
         switch (input.status()) {
             case PAGO -> {
                 if (input.dataPagamento() == null || input.valorPago() == null) {
                     throw new IllegalArgumentException("Para status PAGO, dataPagamento e valorPago são obrigatórios.");
                 }
             }
-
             case PENDENTE, ATRASADO -> {
                 if (input.dataPagamento() != null || input.valorPago() != null) {
                     throw new IllegalArgumentException("Para PENDENTE ou ATRASADO não deve existir pagamento.");
                 }
             }
         }
-    }
-
-    private MensalidadeDTO converterParaDTO(Mensalidade mensalidade, String nomeAluno) {
-        return new MensalidadeDTO(
-                mensalidade.getId(),
-                mensalidade.getAlunoId(),
-                nomeAluno != null && !nomeAluno.isBlank() ? nomeAluno : "Aluno não encontrado",
-                mensalidade.getValorMensalidade(),
-                mensalidade.getDataVencimento(),
-                mensalidade.getStatus(),
-                mensalidade.getValorPago(),
-                mensalidade.getDataPagamento()
-        );
     }
 }

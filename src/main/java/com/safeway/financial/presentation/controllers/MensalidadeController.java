@@ -60,8 +60,7 @@ public class MensalidadeController {
 
         var input = new BuscarMensalidadesUseCase.Input(alunoId, dataInicio, dataFim, status, usuarioId);
 
-        Page<MensalidadeResponse> response = buscarMensalidadesUseCase
-                .executar(input, pageable).map(mapper::toResponse);
+        Page<MensalidadeResponse> response = mapper.toResponsePage(buscarMensalidadesUseCase.executar(input, pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -82,8 +81,7 @@ public class MensalidadeController {
 
         var input = new BuscarMensalidadesUseCase.Input(null, null, null, List.of(StatusPagamento.PENDENTE, StatusPagamento.ATRASADO), usuarioId);
 
-        Page<MensalidadeResponse> response = buscarMensalidadesUseCase
-                .executar(input, pageable).map(mapper::toResponse);
+        Page<MensalidadeResponse> response = mapper.toResponsePage(buscarMensalidadesUseCase.executar(input, pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

@@ -1,8 +1,8 @@
 package com.safeway.financial.application.usecases.mensalidade.impl;
 
 import com.safeway.financial.application.dto.MensalidadeDTO;
+import com.safeway.financial.application.mappers.MensalidadeApplicationMapper;
 import com.safeway.financial.application.ports.output.AlunoGateway;
-import com.safeway.financial.application.ports.output.UsuarioGateway;
 import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadePorIdUseCase;
 import com.safeway.financial.domain.entities.Mensalidade;
 import com.safeway.financial.domain.exceptions.AlunoNotFoundException;
@@ -23,60 +23,29 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
 
     private final MensalidadeRepository mensalidadeRepository;
     private final AlunoGateway alunoGateway;
-    private final UsuarioGateway usuarioGateway;
+    private final MensalidadeApplicationMapper mapper;
 
     @Override
     @Transactional(readOnly = true)
     public MensalidadeDTO buscarMensalidadePorId(UUID mensalidadeId, UUID usuarioId) {
 
-        if (!usuarioGateway.estaAtivo(usuarioId)) {
-            log.error("Usuário com id: {} está inativo. Operação não permitida.", usuarioId);
-            throw new OperationNotAlloyedException("Usuário inativo. Não é possível buscar a mensalidade.");
-        }
-
         Mensalidade mensalidade = mensalidadeRepository.buscarPorId(mensalidadeId)
                 .orElseThrow(() -> {
-                    log.error("Erro ao buscar a mensalidade de id {}", mensalidadeId);
+                    log.error("Mensalidade de id {} não encontrada.", mensalidadeId);
                     return new MensalidadeNotFoundException("Erro ao tentar buscar a mensalidade");
                 });
 
         AlunoGateway.AlunoData alunoData = alunoGateway.buscarPorId(mensalidade.getAlunoId())
                 .orElseThrow(() -> {
-                    log.error("Erro ao buscar pelo aluno de id {}", mensalidade.getAlunoId());
+                    log.error("Aluno de id {} não encontrado.", mensalidade.getAlunoId());
                     return new AlunoNotFoundException("Erro ao tentar buscar o aluno");
                 });
 
         if (!alunoData.usuarioId().equals(usuarioId)) {
-            log.error("O id do usuário da sessão não corresponde ao id do usuario relacionado ao aluno. ID-SESSAO: {} ID-ALUNO: {}", usuarioId, alunoData.usuarioId());
+            log.error("Usuário {} não tem permissão sobre a mensalidade {}.", usuarioId, mensalidadeId);
             throw new OperationNotAlloyedException("Operação não permitida");
         }
 
-        return converterParaDTO(mensalidade, alunoData);
-    }
-
-    @Override
-    public Mensalidade converterParaDomain(MensalidadeDTO dto) {
-        return new Mensalidade(
-                dto.id(),
-                dto.alunoId(),
-                dto.dataVencimento(),
-                dto.valorMensalidade(),
-                dto.status(),
-                dto.dataPagamento(),
-                dto.valorPago()
-        );
-    }
-
-    private MensalidadeDTO converterParaDTO(Mensalidade mensalidade, AlunoGateway.AlunoData alunoData) {
-        return new MensalidadeDTO(
-                mensalidade.getId(),
-                mensalidade.getAlunoId(),
-                alunoData.nome(),
-                mensalidade.getValorMensalidade(),
-                mensalidade.getDataVencimento(),
-                mensalidade.getStatus(),
-                mensalidade.getValorPago(),
-                mensalidade.getDataPagamento()
-        );
+        return mapper.toDTO(mensalidade);
     }
 }

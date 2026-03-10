@@ -1,7 +1,7 @@
 package com.safeway.financial.application.usecases.pagamento.impl;
 
 import com.safeway.financial.application.dto.PagamentoDTO;
-import com.safeway.financial.application.ports.output.UsuarioGateway;
+import com.safeway.financial.application.mappers.PagamentoApplicationMapper;
 import com.safeway.financial.application.usecases.pagamento.BuscarPagamentoPorIdUseCase;
 import com.safeway.financial.domain.entities.Pagamento;
 import com.safeway.financial.domain.exceptions.PagamentoNotFoundException;
@@ -19,49 +19,23 @@ import java.util.UUID;
 public class BuscarPagamentoPorIdUseCaseImpl implements BuscarPagamentoPorIdUseCase {
 
     private final PagamentoRepository pagamentoRepository;
-    private final UsuarioGateway usuarioGateway;
+    private final PagamentoApplicationMapper mapper;
 
     @Override
     @Transactional(readOnly = true)
     public PagamentoDTO buscarPagamentoPorId(UUID pagamentoId, UUID usuarioId) {
 
-        if (!usuarioGateway.estaAtivo(usuarioId)) {
-            log.error("Usuário com id: {} está inativo. Operação não permitida.", usuarioId);
-            throw new RuntimeException("Usuário inativo. Não é possível buscar o pagamento.");
-        }
-
         Pagamento pagamento = pagamentoRepository.buscarPorId(pagamentoId)
                 .orElseThrow(() -> {
-                    log.error("Erro ao buscar o pagamento de id {}", pagamentoId);
+                    log.error("Pagamento de id {} não encontrado.", pagamentoId);
                     return new PagamentoNotFoundException("Erro ao tentar buscar o pagamento");
                 });
 
         if (!pagamento.getUsuarioId().equals(usuarioId)) {
-            log.error("O pagamento de id {} não pertence ao usuário de id {}", pagamentoId, usuarioId);
+            log.error("Pagamento {} não pertence ao usuário {}.", pagamentoId, usuarioId);
             throw new PagamentoNotFoundException("Erro ao tentar buscar o pagamento");
         }
 
-        return converterParaDTO(pagamento);
-    }
-
-    @Override
-    public Pagamento converterParaDomain(PagamentoDTO dto) {
-        return new Pagamento(
-                dto.id(),
-                dto.usuarioId(),
-                dto.dataPagamento(),
-                dto.valorPagamento(),
-                dto.descricao()
-        );
-    }
-
-    private PagamentoDTO converterParaDTO(Pagamento pagamento) {
-        return new PagamentoDTO(
-                pagamento.getId(),
-                pagamento.getUsuarioId(),
-                pagamento.getDataPagamento(),
-                pagamento.getValorPagamento(),
-                pagamento.getDescricao()
-        );
+        return mapper.toDTO(pagamento);
     }
 }
