@@ -40,6 +40,7 @@ public class AlunoEventListener {
             Mensalidade mensalidade = new Mensalidade(
                     null,
                     event.alunoId(),
+                    event.nome(),
                     dataVencimento,
                     event.valorMensalidade(),
                     StatusPagamento.PENDENTE,

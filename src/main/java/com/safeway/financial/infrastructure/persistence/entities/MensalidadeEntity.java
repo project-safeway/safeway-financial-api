@@ -36,6 +36,9 @@ public class MensalidadeEntity {
     @Column(name = "fk_aluno")
     private UUID alunoId;
 
+    @Column(name = "nome_aluno")
+    private String nomeAluno;
+
     @Column(name = "data_vencimento", nullable = false)
     private LocalDate dataVencimento;
     @Column(name = "valor_mensalidade", nullable = false)

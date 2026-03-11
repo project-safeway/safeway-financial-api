@@ -40,7 +40,7 @@ public class CancelarMensalidadeUseCaseImpl implements CancelarMensalidadeUseCas
         mensalidade.marcarComoCancelada();
         mensalidadeRepository.salvar(mensalidade);
 
-        return converterParaDTO(mensalidade, dto.nomeAluno());
+        return converterParaDTO(mensalidade);
     }
 
     private void validarMensalidade(Mensalidade mensalidade) {
@@ -55,11 +55,11 @@ public class CancelarMensalidadeUseCaseImpl implements CancelarMensalidadeUseCas
         }
     }
 
-    private MensalidadeDTO converterParaDTO(Mensalidade mensalidade, String nomeAluno) {
+    private MensalidadeDTO converterParaDTO(Mensalidade mensalidade) {
         return new MensalidadeDTO(
                 mensalidade.getId(),
                 mensalidade.getAlunoId(),
-                nomeAluno,
+                mensalidade.getNomeAluno(),
                 mensalidade.getValorMensalidade(),
                 mensalidade.getDataVencimento(),
                 mensalidade.getStatus(),

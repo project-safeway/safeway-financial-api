@@ -6,10 +6,10 @@ spring:
     name: safeway-financial
 
   datasource:
-    url: jdbc:h2:mem:safeway_financial;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    url: jdbc:mysql://localhost:3307/safeway_financial
     username: ${DB_USER:sa}
     password: ${DB_PASSWORD:}
-    driver-class-name: org.h2.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:

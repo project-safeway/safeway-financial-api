@@ -165,7 +165,7 @@ class AplicarDescontoUseCaseImplTest {
 
     private Mensalidade criarMensalidade(Double valor, StatusPagamento status, Double valorPago, LocalDate dataPagamento) {
         return new Mensalidade(
-                mensalidadeId, alunoId, LocalDate.now().plusDays(30),
+                mensalidadeId, alunoId, "João Silva", LocalDate.now().plusDays(30),
                 valor, status, dataPagamento, valorPago
         );
     }

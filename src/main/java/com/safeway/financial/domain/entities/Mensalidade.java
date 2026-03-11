@@ -9,6 +9,7 @@ public class Mensalidade {
 
     private UUID id;
     private UUID alunoId;
+    private String nomeAluno;
     private LocalDate dataVencimento;
     private Double valorMensalidade;
     private StatusPagamento status;
@@ -19,9 +20,10 @@ public class Mensalidade {
 
     }
 
-    public Mensalidade(UUID id, UUID alunoId, LocalDate dataVencimento, Double valorMensalidade, StatusPagamento status, LocalDate dataPagamento, Double valorPago) {
+    public Mensalidade(UUID id, UUID alunoId, String nomeAluno, LocalDate dataVencimento, Double valorMensalidade, StatusPagamento status, LocalDate dataPagamento, Double valorPago) {
         this.id = id;
         this.alunoId = alunoId;
+        this.nomeAluno = nomeAluno;
         this.dataVencimento = dataVencimento;
         this.valorMensalidade = valorMensalidade;
         this.status = status;
@@ -35,6 +37,10 @@ public class Mensalidade {
 
     public UUID getAlunoId() {
         return alunoId;
+    }
+
+    public String getNomeAluno() {
+        return nomeAluno;
     }
 
     public LocalDate getDataVencimento() {

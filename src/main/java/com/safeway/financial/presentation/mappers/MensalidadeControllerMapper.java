@@ -11,6 +11,7 @@ public class MensalidadeControllerMapper {
         return new MensalidadeResponse(
                 dto.id(),
                 dto.alunoId(),
+                dto.nomeAluno(),
                 dto.dataVencimento(),
                 dto.valorMensalidade(),
                 dto.status(),

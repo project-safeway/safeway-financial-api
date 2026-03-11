@@ -51,7 +51,7 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
             throw new OperationNotAlloyedException("Operação não permitida");
         }
 
-        return converterParaDTO(mensalidade, alunoData);
+        return converterParaDTO(mensalidade);
     }
 
     @Override
@@ -59,6 +59,7 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
         return new Mensalidade(
                 dto.id(),
                 dto.alunoId(),
+                dto.nomeAluno(),
                 dto.dataVencimento(),
                 dto.valorMensalidade(),
                 dto.status(),
@@ -67,11 +68,11 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
         );
     }
 
-    private MensalidadeDTO converterParaDTO(Mensalidade mensalidade, AlunoGateway.AlunoData alunoData) {
+    private MensalidadeDTO converterParaDTO(Mensalidade mensalidade) {
         return new MensalidadeDTO(
                 mensalidade.getId(),
                 mensalidade.getAlunoId(),
-                alunoData.nome(),
+                mensalidade.getNomeAluno(),
                 mensalidade.getValorMensalidade(),
                 mensalidade.getDataVencimento(),
                 mensalidade.getStatus(),

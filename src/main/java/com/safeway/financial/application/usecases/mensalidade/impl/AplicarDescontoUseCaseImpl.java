@@ -44,14 +44,14 @@ public class AplicarDescontoUseCaseImpl implements AplicarDescontoUseCase {
 
         mensalidade.aplicarDesconto(valorDesconto);
         mensalidadeRepository.salvar(mensalidade);
-        return converterParaDTO(mensalidade, dto.nomeAluno());
+        return converterParaDTO(mensalidade);
     }
 
-    private MensalidadeDTO converterParaDTO(Mensalidade mensalidade, String nomeAluno) {
+    private MensalidadeDTO converterParaDTO(Mensalidade mensalidade) {
         return new MensalidadeDTO(
                 mensalidade.getId(),
                 mensalidade.getAlunoId(),
-                nomeAluno,
+                mensalidade.getNomeAluno(),
                 mensalidade.getValorMensalidade(),
                 mensalidade.getDataVencimento(),
                 mensalidade.getStatus(),

@@ -44,8 +44,11 @@ public class MensalidadeScheduler {
                 LocalDate dataVencimento = calcularDataVencimento(data, aluno.diaVencimento());
 
                 Mensalidade mensalidade = new Mensalidade(
-                        null, aluno.id(),
-                        dataVencimento, aluno.valorMensalidade(),
+                        null,
+                        aluno.id(),
+                        aluno.nome(),
+                        dataVencimento,
+                        aluno.valorMensalidade(),
                         StatusPagamento.PENDENTE,
                         null, null);
 

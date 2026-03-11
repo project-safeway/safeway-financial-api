@@ -164,7 +164,7 @@ class PagarMensalidadeUseCaseImplTest {
 
     private Mensalidade criarMensalidade(StatusPagamento status, Double valorPago, LocalDate dataPagamento) {
         return new Mensalidade(
-                mensalidadeId, alunoId, LocalDate.now().plusDays(30),
+                mensalidadeId, alunoId, "João Silva", LocalDate.now().plusDays(30),
                 500.0, status, dataPagamento, valorPago
         );
     }

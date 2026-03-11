@@ -63,7 +63,7 @@ class CriarMensalidadeUseCaseImplTest {
             );
             AlunoGateway.AlunoData alunoData = criarAlunoData(true);
             Mensalidade mensalidadeSalva = new Mensalidade(
-                    UUID.randomUUID(), alunoId, input.dataVencimento(),
+                    UUID.randomUUID(), alunoId, "João Silva", input.dataVencimento(),
                     input.valorMensalidade(), input.status(), null, null
             );
 
@@ -90,7 +90,7 @@ class CriarMensalidadeUseCaseImplTest {
             );
             AlunoGateway.AlunoData alunoData = criarAlunoData(true);
             Mensalidade mensalidadeSalva = new Mensalidade(
-                    UUID.randomUUID(), alunoId, input.dataVencimento(),
+                    UUID.randomUUID(), alunoId, "João Silva", input.dataVencimento(),
                     input.valorMensalidade(), input.status(), dataPagamento, 500.0
             );
 
@@ -173,18 +173,26 @@ class CriarMensalidadeUseCaseImplTest {
     class FalhaValidacaoEstrutura {
 
         @Test
-        @DisplayName("Deve lançar exceção quando status é null")
-        void deveLancarExcecaoQuandoStatusNull() {
+        @DisplayName("Deve criar mensalidade com status PENDENTE quando status é null")
+        void deveCriarMensalidadeComStatusPendenteQuandoStatusNull() {
             CriarMensalidadeUseCase.Input input = new CriarMensalidadeUseCase.Input(
                     alunoId, LocalDate.of(2026, 4, 15), 500.0, null, null, null
             );
             AlunoGateway.AlunoData alunoData = criarAlunoData(true);
+            Mensalidade mensalidadeSalva = new Mensalidade(
+                    UUID.randomUUID(), alunoId, "João Silva", input.dataVencimento(),
+                    input.valorMensalidade(), StatusPagamento.PENDENTE, null, null
+            );
+
             when(usuarioGateway.estaAtivo(usuarioId)).thenReturn(true);
             when(alunoGateway.buscarPorId(alunoId)).thenReturn(Optional.of(alunoData));
+            when(mensalidadeRepository.salvar(any(Mensalidade.class))).thenReturn(mensalidadeSalva);
 
-            assertThatThrownBy(() -> criarMensalidadeUseCase.criarNovaMensalidade(input, usuarioId))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("Status é obrigatório");
+            MensalidadeDTO resultado = criarMensalidadeUseCase.criarNovaMensalidade(input, usuarioId);
+
+            assertThat(resultado).isNotNull();
+            assertThat(resultado.status()).isEqualTo(StatusPagamento.PENDENTE);
+            verify(mensalidadeRepository).salvar(any(Mensalidade.class));
         }
 
         @Test
