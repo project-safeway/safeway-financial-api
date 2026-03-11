@@ -119,7 +119,7 @@ class BuscarMensalidadesUseCaseImplTest {
 
             Mensalidade m1 = criarMensalidade(StatusPagamento.PENDENTE);
             Mensalidade m2 = new Mensalidade(
-                    UUID.randomUUID(), alunoId, LocalDate.of(2026, 2, 15),
+                    UUID.randomUUID(), alunoId, "João Silva", LocalDate.of(2026, 2, 15),
                     300.0, StatusPagamento.ATRASADO, null, null
             );
             Page<Mensalidade> mensalidadesPage = new PageImpl<>(List.of(m1, m2));
@@ -179,7 +179,7 @@ class BuscarMensalidadesUseCaseImplTest {
 
     private Mensalidade criarMensalidade(StatusPagamento status) {
         return new Mensalidade(
-                UUID.randomUUID(), alunoId, LocalDate.now().plusDays(30),
+                UUID.randomUUID(), alunoId, "João Silva", LocalDate.now().plusDays(30),
                 500.0, status, null, null
         );
     }

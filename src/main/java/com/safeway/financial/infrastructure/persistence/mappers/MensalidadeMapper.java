@@ -11,6 +11,7 @@ public class MensalidadeMapper {
         return new Mensalidade(
                 entity.getId(),
                 entity.getAlunoId(),
+                entity.getNomeAluno(),
                 entity.getDataVencimento(),
                 entity.getValorMensalidade(),
                 entity.getStatus(),
@@ -23,6 +24,7 @@ public class MensalidadeMapper {
         return MensalidadeEntity.builder()
                 .id(domain.getId())
                 .alunoId(domain.getAlunoId())
+                .nomeAluno(domain.getNomeAluno())
                 .dataVencimento(domain.getDataVencimento())
                 .valorMensalidade(domain.getValorMensalidade())
                 .status(domain.getStatus())

@@ -161,7 +161,7 @@ class BuscarMensalidadePorIdUseCaseImplTest {
 
     private Mensalidade criarMensalidade(StatusPagamento status) {
         return new Mensalidade(
-                mensalidadeId, alunoId, LocalDate.now().plusDays(30),
+                mensalidadeId, alunoId, "João Silva", LocalDate.now().plusDays(30),
                 500.0, status, null, null
         );
     }
