@@ -92,6 +92,7 @@ public class CriarMensalidadeUseCaseImpl implements CriarMensalidadeUseCase {
         }
     }
 
+    @SuppressWarnings("MissingSwitchDefault")
     private void validarRegrasDeNegocio(Input input) {
         if (input.status() == null) {
             return;

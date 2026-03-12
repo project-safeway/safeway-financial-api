@@ -24,7 +24,7 @@ public class CancelarMensalidadeUseCaseImpl implements CancelarMensalidadeUseCas
     private final UsuarioGateway usuarioGateway;
 
     @Override
-    public MensalidadeDTO cancelarMensalidade(UUID mensalidadeId,UUID usuarioId) {
+    public MensalidadeDTO cancelarMensalidade(UUID mensalidadeId, UUID usuarioId) {
         if (!usuarioGateway.estaAtivo(usuarioId)) {
             log.error("Usuário com id: {} está inativo. Operação não permitida.", usuarioId);
             throw new MensalidadeWithFinalStatusException("Usuário inativo. Não é possível cancelar a mensalidade.");

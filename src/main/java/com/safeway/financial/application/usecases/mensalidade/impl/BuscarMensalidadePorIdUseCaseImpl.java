@@ -47,7 +47,8 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
                 });
 
         if (!alunoData.usuarioId().equals(usuarioId)) {
-            log.error("O id do usuário da sessão não corresponde ao id do usuario relacionado ao aluno. ID-SESSAO: {} ID-ALUNO: {}", usuarioId, alunoData.usuarioId());
+            log.error("O id do usuário da sessão não corresponde ao id do usuario relacionado ao aluno. ID-SESSAO: {} ID-ALUNO: {}",
+                    usuarioId, alunoData.usuarioId());
             throw new OperationNotAlloyedException("Operação não permitida");
         }
 

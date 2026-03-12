@@ -57,8 +57,10 @@ public class MensalidadeScheduler {
         }
 
         if (!mensalidadesParaCriar.isEmpty()) {
-            // WARN: Ele vai funcionar normal, mas em casos que possamos ter mais de uma instacia do scheduler rodando, pode gerar mensalidades duplicadas
-            // A melhor forma de evitar isso seria com uma constraint, mas temos que decidir a regra se ele pode criar mais de uma pra mensalidade pra mesma data
+            // WARN: Ele vai funcionar normal, mas em casos que possamos ter mais de uma instacia do scheduler rodando,
+            // pode gerar mensalidades duplicadas
+            // A melhor forma de evitar isso seria com uma constraint,
+            // mas temos que decidir a regra se ele pode criar mais de uma pra mensalidade pra mesma data
             mensalidadeRepository.salvarTodos(mensalidadesParaCriar);
             log.info("Finalizada geração de mensalidades. Total de mensalidades geradas: {}", mensalidadesParaCriar.size());
         } else {

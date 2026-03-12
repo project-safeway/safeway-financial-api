@@ -46,8 +46,8 @@ public class ServiceAuthenticationProvider {
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             Map<String, String> loginRequest = Map.of(
-                "email", serviceUsername,
-                "senha", servicePassword
+                    "email", serviceUsername,
+                    "senha", servicePassword
             );
 
             HttpEntity<Map<String, String>> request = new HttpEntity<>(loginRequest, headers);
