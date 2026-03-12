@@ -20,7 +20,8 @@ public class Mensalidade {
 
     }
 
-    public Mensalidade(UUID id, UUID alunoId, String nomeAluno, LocalDate dataVencimento, Double valorMensalidade, StatusPagamento status, LocalDate dataPagamento, Double valorPago) {
+    public Mensalidade(UUID id, UUID alunoId, String nomeAluno, LocalDate dataVencimento,
+                       Double valorMensalidade, StatusPagamento status, LocalDate dataPagamento, Double valorPago) {
         this.id = id;
         this.alunoId = alunoId;
         this.nomeAluno = nomeAluno;

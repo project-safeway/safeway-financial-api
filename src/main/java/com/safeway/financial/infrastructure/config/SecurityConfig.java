@@ -52,7 +52,8 @@ public class SecurityConfig {
                 return new KeyPair(pub, pri);
             }
         } catch (Exception e) {
-            System.err.println("Aviso: falha ao carregar chaves RSA de '" + publicKey + "'/'" + privateKey + "'. Gerando chaves em memória. Detalhe: " + e.getMessage());
+            System.err.println("Aviso: falha ao carregar chaves RSA de '" + publicKey + "'/'" + privateKey +
+                    "'. Gerando chaves em memória. Detalhe: " + e.getMessage());
         }
         try {
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
