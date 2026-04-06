@@ -8,6 +8,7 @@ import java.util.UUID;
 public record MensalidadeResponse(
         UUID id,
         UUID alunoId,
+        String nomeAluno,
         LocalDate dataVencimento,
         Double valorMensalidade,
         StatusPagamento status,

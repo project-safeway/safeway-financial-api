@@ -1,9 +1,11 @@
 package com.safeway.financial.application.usecases.mensalidade.impl;
 
 import com.safeway.financial.application.dto.MensalidadeDTO;
+import com.safeway.financial.application.ports.output.UsuarioGateway;
 import com.safeway.financial.application.usecases.mensalidade.AplicarDescontoUseCase;
 import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadePorIdUseCase;
 import com.safeway.financial.domain.entities.Mensalidade;
+import com.safeway.financial.domain.exceptions.OperationNotAlloyedException;
 import com.safeway.financial.domain.exceptions.ValorDescontoNotValidException;
 import com.safeway.financial.domain.repositories.MensalidadeRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +21,16 @@ public class AplicarDescontoUseCaseImpl implements AplicarDescontoUseCase {
 
     private final MensalidadeRepository mensalidadeRepository;
     private final BuscarMensalidadePorIdUseCase buscarMensalidadePorIdUseCase;
+    private final UsuarioGateway usuarioGateway;
 
     @Override
     public MensalidadeDTO aplicarDesconto(UUID mensalidadeId, Double valorDesconto, UUID usuarioId) {
+
+        if (!usuarioGateway.estaAtivo(usuarioId)) {
+            log.error("Usuário com id: {} está inativo. Operação não permitida.", usuarioId);
+            throw new OperationNotAlloyedException("Usuário inativo. Não é possível aplicar o desconto a mensalidade.");
+        }
+
         if (valorDesconto == null || valorDesconto <= 0) {
             throw new ValorDescontoNotValidException("Valor de desconto deve ser maior que zero.");
         }
@@ -35,14 +44,14 @@ public class AplicarDescontoUseCaseImpl implements AplicarDescontoUseCase {
 
         mensalidade.aplicarDesconto(valorDesconto);
         mensalidadeRepository.salvar(mensalidade);
-        return converterParaDTO(mensalidade, dto.nomeAluno());
+        return converterParaDTO(mensalidade);
     }
 
-    private MensalidadeDTO converterParaDTO(Mensalidade mensalidade, String nomeAluno) {
+    private MensalidadeDTO converterParaDTO(Mensalidade mensalidade) {
         return new MensalidadeDTO(
                 mensalidade.getId(),
                 mensalidade.getAlunoId(),
-                nomeAluno,
+                mensalidade.getNomeAluno(),
                 mensalidade.getValorMensalidade(),
                 mensalidade.getDataVencimento(),
                 mensalidade.getStatus(),

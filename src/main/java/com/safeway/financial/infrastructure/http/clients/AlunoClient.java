@@ -3,7 +3,8 @@ package com.safeway.financial.infrastructure.http.clients;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,14 +16,14 @@ import java.util.UUID;
 )
 public interface AlunoClient {
 
-    @GetMapping("/alunos/{id}")
+    @GetMapping("/alunos/feign/{id}")
     AlunoResponse buscarAluno(@PathVariable UUID id);
 
     @GetMapping("/alunos/ativos")
     List<AlunoResponse> buscarTodosAtivos();
 
-    @GetMapping("/alunos/lote")
-    List<AlunoResponse> buscarPorIdEmLote(@RequestParam("ids") List<UUID> ids);
+    @PostMapping("/alunos/lote")
+    List<AlunoResponse> buscarPorIdEmLote(@RequestBody List<UUID> ids);
 
     record AlunoResponse(
             UUID id,

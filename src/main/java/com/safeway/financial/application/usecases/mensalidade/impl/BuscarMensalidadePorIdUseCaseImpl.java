@@ -2,6 +2,7 @@ package com.safeway.financial.application.usecases.mensalidade.impl;
 
 import com.safeway.financial.application.dto.MensalidadeDTO;
 import com.safeway.financial.application.ports.output.AlunoGateway;
+import com.safeway.financial.application.ports.output.UsuarioGateway;
 import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadePorIdUseCase;
 import com.safeway.financial.domain.entities.Mensalidade;
 import com.safeway.financial.domain.exceptions.AlunoNotFoundException;
@@ -22,10 +23,16 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
 
     private final MensalidadeRepository mensalidadeRepository;
     private final AlunoGateway alunoGateway;
+    private final UsuarioGateway usuarioGateway;
 
     @Override
     @Transactional(readOnly = true)
     public MensalidadeDTO buscarMensalidadePorId(UUID mensalidadeId, UUID usuarioId) {
+
+        if (!usuarioGateway.estaAtivo(usuarioId)) {
+            log.error("Usuário com id: {} está inativo. Operação não permitida.", usuarioId);
+            throw new OperationNotAlloyedException("Usuário inativo. Não é possível buscar a mensalidade.");
+        }
 
         Mensalidade mensalidade = mensalidadeRepository.buscarPorId(mensalidadeId)
                 .orElseThrow(() -> {
@@ -40,11 +47,12 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
                 });
 
         if (!alunoData.usuarioId().equals(usuarioId)) {
-            log.error("O id do usuário da sessão não corresponde ao id do usuario relacionado ao aluno. ID-SESSAO: {} ID-ALUNO: {}", usuarioId, alunoData.usuarioId());
+            log.error("O id do usuário da sessão não corresponde ao id do usuario relacionado ao aluno. ID-SESSAO: {} ID-ALUNO: {}",
+                    usuarioId, alunoData.usuarioId());
             throw new OperationNotAlloyedException("Operação não permitida");
         }
 
-        return converterParaDTO(mensalidade, alunoData);
+        return converterParaDTO(mensalidade);
     }
 
     @Override
@@ -52,6 +60,8 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
         return new Mensalidade(
                 dto.id(),
                 dto.alunoId(),
+                null,
+                dto.nomeAluno(),
                 dto.dataVencimento(),
                 dto.valorMensalidade(),
                 dto.status(),
@@ -60,11 +70,11 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
         );
     }
 
-    private MensalidadeDTO converterParaDTO(Mensalidade mensalidade, AlunoGateway.AlunoData alunoData) {
+    private MensalidadeDTO converterParaDTO(Mensalidade mensalidade) {
         return new MensalidadeDTO(
                 mensalidade.getId(),
                 mensalidade.getAlunoId(),
-                alunoData.nome(),
+                mensalidade.getNomeAluno(),
                 mensalidade.getValorMensalidade(),
                 mensalidade.getDataVencimento(),
                 mensalidade.getStatus(),

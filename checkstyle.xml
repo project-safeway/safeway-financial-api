@@ -1,0 +1,219 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+    Checkstyle configuration for SafeWay.
+    Based on Google Java Style Guide with ajustes para o projeto.
+-->
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+    <property name="severity" value="warning"/>
+    <property name="fileExtensions" value="java"/>
+
+    <!-- ==================== TAMANHO DE ARQUIVO ==================== -->
+    <!-- Limite de linhas por arquivo -->
+    <module name="FileLength">
+        <property name="max" value="500"/>
+        <property name="severity" value="warning"/>
+    </module>
+
+    <!-- Proibir tabulações (usar espaços) -->
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+    </module>
+
+    <!-- Linha em branco no final do arquivo -->
+    <module name="NewlineAtEndOfFile">
+        <property name="lineSeparator" value="lf_cr_crlf"/>
+    </module>
+
+    <!-- Máximo de caracteres por linha -->
+    <module name="LineLength">
+        <property name="max" value="150"/>
+        <property name="fileExtensions" value="java"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+    </module>
+
+    <!-- ==================== TREE WALKER (regras por linha/token) ==================== -->
+    <module name="TreeWalker">
+
+        <!-- Permite suprimir avisos com @SuppressWarnings -->
+        <module name="SuppressWarningsHolder"/>
+
+        <!-- ========== IMPORTS ========== -->
+        <!-- Sem imports com wildcard (ex: import java.util.*) -->
+        <module name="AvoidStarImport">
+            <property name="severity" value="warning"/>
+        </module>
+
+        <!-- Sem imports não utilizados -->
+        <module name="UnusedImports"/>
+
+        <!-- Sem imports redundantes -->
+        <module name="RedundantImport"/>
+
+        <!-- ========== NAMING CONVENTIONS ========== -->
+        <!-- Pacotes: tudo minúsculo -->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+        </module>
+
+        <!-- Classes/Interfaces: UpperCamelCase -->
+        <module name="TypeName">
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Métodos: lowerCamelCase -->
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Variáveis locais: lowerCamelCase -->
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Parâmetros: lowerCamelCase -->
+        <module name="ParameterName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Campos de instância: lowerCamelCase -->
+        <module name="MemberName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Constantes (static final): UPPER_SNAKE_CASE -->
+        <module name="ConstantName">
+            <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$|^log(ger)?$"/>
+        </module>
+
+        <!-- ========== TAMANHO ========== -->
+
+        <!-- Máximo de linhas por método -->
+        <module name="MethodLength">
+            <property name="max" value="60"/>
+            <property name="severity" value="warning"/>
+        </module>
+
+        <!-- Máximo de parâmetros por método -->
+        <module name="ParameterNumber">
+            <property name="max" value="8"/>
+            <property name="severity" value="warning"/>
+            <property name="tokens" value="METHOD_DEF"/>
+        </module>
+
+        <!-- ========== ESPAÇAMENTO / WHITESPACE ========== -->
+        <!-- Espaço após vírgulas, ponto-e-vírgula etc. -->
+        <module name="WhitespaceAfter">
+            <property name="tokens" value="COMMA, SEMI"/>
+        </module>
+
+        <!-- Espaço ao redor de operadores -->
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="true"/>
+            <property name="allowEmptyLambdas" value="true"/>
+        </module>
+
+        <!-- Sem espaço antes de ponto-e-vírgula -->
+        <module name="NoWhitespaceBefore"/>
+
+        <!-- Sem espaço após operadores unários -->
+        <module name="NoWhitespaceAfter">
+            <property name="tokens" value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS"/>
+        </module>
+
+        <!-- Uma declaração por linha -->
+        <module name="OneStatementPerLine"/>
+
+        <!-- ========== BLOCOS / BRACES ========== -->
+        <!-- Chaves obrigatórias em if/else/for/while/do -->
+        <module name="NeedBraces"/>
+
+        <!-- Estilo de chave esquerda: mesma linha -->
+        <module name="LeftCurly"/>
+
+        <!-- Estilo de chave direita -->
+        <module name="RightCurly"/>
+
+        <!-- Blocos vazios não permitidos (exceto catch com comentário) -->
+        <module name="EmptyBlock">
+            <property name="option" value="TEXT"/>
+            <property name="tokens" value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH"/>
+        </module>
+
+        <!-- ========== BOAS PRÁTICAS ========== -->
+        <!-- Não usar == para comparar strings -->
+        <module name="StringLiteralEquality"/>
+
+        <!-- Simplificar expressões booleanas -->
+        <module name="SimplifyBooleanExpression"/>
+
+        <!-- Simplificar retornos booleanos -->
+        <module name="SimplifyBooleanReturn"/>
+
+        <!-- Não declarar métodos finalize() -->
+        <module name="NoFinalizer"/>
+
+        <!-- equals() e hashCode() devem ser sobrescritos juntos -->
+        <module name="EqualsHashCode"/>
+
+        <!-- Evitar blocos aninhados desnecessários -->
+        <module name="AvoidNestedBlocks"/>
+
+        <!-- Cláusula default no switch -->
+        <module name="MissingSwitchDefault">
+            <property name="severity" value="warning"/>
+        </module>
+
+        <!-- Fall-through em switch deve ter comentário -->
+        <module name="FallThrough"/>
+
+        <!-- Modificadores na ordem correta (public static final...) -->
+        <module name="ModifierOrder"/>
+
+        <!-- Sem modificadores redundantes -->
+        <module name="RedundantModifier"/>
+
+        <!-- ========== ANNOTATIONS ========== -->
+        <!-- @Override deve sempre estar presente quando aplicável -->
+        <module name="MissingOverride"/>
+
+        <!-- ========== MISC ========== -->
+        <!-- Indentação -->
+        <module name="Indentation">
+            <property name="basicOffset" value="4"/>
+            <property name="braceAdjustment" value="0"/>
+            <property name="caseIndent" value="4"/>
+            <property name="throwsIndent" value="8"/>
+            <property name="lineWrappingIndentation" value="8"/>
+            <property name="arrayInitIndent" value="4"/>
+        </module>
+
+        <!-- Sem espaços em branco no final da linha -->
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="\s+$"/>
+            <property name="message" value="Linha contém espaços em branco no final."/>
+            <property name="severity" value="info"/>
+        </module>
+
+        <!-- Arquivo deve pertencer a um pacote -->
+        <module name="PackageDeclaration"/>
+
+        <!-- Uma classe de nível superior por arquivo -->
+        <module name="OneTopLevelClass"/>
+
+    </module>
+
+    <!-- Permite suprimir avisos com @SuppressWarnings -->
+    <module name="SuppressWarningsFilter"/>
+
+</module>
+
+
+

@@ -1,6 +1,7 @@
 package com.safeway.financial.application.usecases.pagamento.impl;
 
 import com.safeway.financial.application.dto.PagamentoDTO;
+import com.safeway.financial.application.ports.output.UsuarioGateway;
 import com.safeway.financial.application.usecases.pagamento.BuscarPagamentoPorIdUseCase;
 import com.safeway.financial.domain.entities.Pagamento;
 import com.safeway.financial.domain.exceptions.PagamentoNotFoundException;
@@ -18,10 +19,16 @@ import java.util.UUID;
 public class BuscarPagamentoPorIdUseCaseImpl implements BuscarPagamentoPorIdUseCase {
 
     private final PagamentoRepository pagamentoRepository;
+    private final UsuarioGateway usuarioGateway;
 
     @Override
     @Transactional(readOnly = true)
     public PagamentoDTO buscarPagamentoPorId(UUID pagamentoId, UUID usuarioId) {
+
+        if (!usuarioGateway.estaAtivo(usuarioId)) {
+            log.error("Usuário com id: {} está inativo. Operação não permitida.", usuarioId);
+            throw new RuntimeException("Usuário inativo. Não é possível buscar o pagamento.");
+        }
 
         Pagamento pagamento = pagamentoRepository.buscarPorId(pagamentoId)
                 .orElseThrow(() -> {

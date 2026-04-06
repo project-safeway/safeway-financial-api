@@ -76,7 +76,8 @@ public class MensalidadeController {
     }
 
     @GetMapping("/pendentes")
-    public ResponseEntity<Page<MensalidadeResponse>> buscarPendentes(@PageableDefault(sort = "dataVencimento", direction = Sort.Direction.ASC)Pageable pageable) {
+    public ResponseEntity<Page<MensalidadeResponse>> buscarPendentes(
+            @PageableDefault(sort = "dataVencimento", direction = Sort.Direction.ASC)Pageable pageable) {
 
         UUID usuarioId = authenticationPort.getCurrentUserId();
 
