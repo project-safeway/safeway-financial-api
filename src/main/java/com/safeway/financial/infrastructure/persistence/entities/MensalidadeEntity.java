@@ -36,6 +36,9 @@ public class MensalidadeEntity {
     @Column(name = "fk_aluno")
     private UUID alunoId;
 
+    @Column(name = "fk_usuario")
+    private UUID usuarioId;
+
     @Column(name = "nome_aluno")
     private String nomeAluno;
 

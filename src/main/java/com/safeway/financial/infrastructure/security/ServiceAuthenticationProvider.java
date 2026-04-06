@@ -21,14 +21,17 @@ public class ServiceAuthenticationProvider {
 
     private final RestTemplate restTemplate;
 
-    @Value("${safeway.core.url}")
-    private String coreUrl;
+    @Value("${auth.service.base-url:http://localhost:8080}")
+    private String authServiceBaseUrl;
 
-    @Value("${safeway.service.auth.username:servico-financeiro@safeway.internal}")
-    private String serviceUsername;
+    @Value("${auth.service.token-endpoint:/auth/v2/token/service}")
+    private String authServiceTokenEndpoint;
 
-    @Value("${safeway.service.auth.password}")
-    private String servicePassword;
+    @Value("${auth.service.client-id:safeway-core}")
+    private String authServiceClientId;
+
+    @Value("${auth.service.client-secret:change-me}")
+    private String authServiceClientSecret;
 
     private String cachedToken;
     private Instant tokenExpiration;
@@ -39,28 +42,28 @@ public class ServiceAuthenticationProvider {
             return cachedToken;
         }
 
-        log.info("Obtendo novo token de serviço");
+        log.info("Obtendo novo token de serviço via Auth V2");
 
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            Map<String, String> loginRequest = Map.of(
-                    "email", serviceUsername,
-                    "senha", servicePassword
+            Map<String, String> tokenRequest = Map.of(
+                    "clientId", authServiceClientId,
+                    "clientSecret", authServiceClientSecret
             );
 
-            HttpEntity<Map<String, String>> request = new HttpEntity<>(loginRequest, headers);
+            HttpEntity<Map<String, String>> request = new HttpEntity<>(tokenRequest, headers);
 
-            ResponseEntity<LoginResponse> response = restTemplate.postForEntity(
-                    coreUrl + "/api/v1/auth/login",
+            ResponseEntity<ServiceTokenResponse> response = restTemplate.postForEntity(
+                    authServiceBaseUrl + authServiceTokenEndpoint,
                     request,
-                    LoginResponse.class
+                    ServiceTokenResponse.class
             );
 
             if (response.getStatusCode().equals(HttpStatus.OK) && response.getBody() != null) {
                 cachedToken = response.getBody().accessToken();
-                tokenExpiration = Instant.now().plusSeconds(response.getBody().expiresIn());
+                tokenExpiration = Instant.now().plusSeconds(response.getBody().expiresIn()).minusSeconds(60);
                 log.info("Novo token obtido com sucesso, expira em: {}", tokenExpiration);
                 return cachedToken;
             }
@@ -77,6 +80,6 @@ public class ServiceAuthenticationProvider {
         tokenExpiration = null;
     }
 
-    record LoginResponse(String accessToken, Long expiresIn, String nomeUsuario, Long idTransporte) {
+    record ServiceTokenResponse(String accessToken, Long expiresIn) {
     }
 }

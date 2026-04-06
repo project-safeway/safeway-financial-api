@@ -8,6 +8,7 @@ import java.util.UUID;
 public record AlunoEvent(
         UUID id,
         UUID alunoId,
+        UUID usuarioId,
         String nome,
         Double valorMensalidade,
         Integer diaVencimento,

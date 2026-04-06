@@ -229,3 +229,45 @@ Vantagens:
 - Validação de entrada com Bean Validation
 
 ---
+
+## 🚀 Publicação da imagem no ECR
+
+### 1) Login no ECR
+
+```bash
+AWS_REGION=us-east-1
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+ECR_REGISTRY="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+
+aws ecr get-login-password --region "$AWS_REGION" \
+  | docker login --username AWS --password-stdin "$ECR_REGISTRY"
+```
+
+### 2) Build e push da imagem do Financial API
+
+```bash
+TAG=latest
+AWS_REGION=us-east-1
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+ECR_REGISTRY="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+
+docker build -t "$ECR_REGISTRY/safeway-financial:$TAG" .
+docker push "$ECR_REGISTRY/safeway-financial:$TAG"
+```
+
+### 3) Atualizar rollout na infra
+
+No projeto `safeway-infra`, confirme a imagem em `terraform.tfvars`:
+
+```hcl
+financial_api_image = "<account>.dkr.ecr.us-east-1.amazonaws.com/safeway-financial:latest"
+```
+
+Depois aplique:
+
+```bash
+cd ../safeway-infra
+terraform apply
+```
+
+---

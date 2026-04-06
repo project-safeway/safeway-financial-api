@@ -6,7 +6,7 @@ spring:
     name: safeway-financial
 
   datasource:
-    url: jdbc:mysql://localhost:3307/safeway_financial
+    url: ${DB_URL:jdbc:mysql://localhost:3307/safeway_financial}
     username: ${DB_USER:sa}
     password: ${DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -69,7 +69,9 @@ safeway:
   core:
     url: ${SAFEWAY_CORE_URL:http://localhost:8080}
 
+auth:
   service:
-    auth:
-      username: ${SAFEWAY_AUTH_USERNAME:admin}
-      password: ${SAFEWAY_AUTH_PASSWORD:password}
+    base-url: ${AUTH_SERVICE_BASE_URL:${SAFEWAY_CORE_URL:http://localhost:8080}}
+    token-endpoint: ${AUTH_SERVICE_TOKEN_ENDPOINT:/auth/v2/token/service}
+    client-id: ${AUTH_SERVICE_CLIENT_ID:safeway-core}
+    client-secret: ${AUTH_SERVICE_CLIENT_SECRET:change-me}

@@ -39,6 +39,13 @@ public class MensalidadeJpaSpecification {
                 predicates.add(root.get("status").in(domainSpec.getStatus()));
             }
 
+            if (domainSpec.getUsuarioId() != null) {
+                predicates.add(criteriaBuilder.equal(
+                        root.get("usuarioId"),
+                        domainSpec.getUsuarioId()
+                ));
+            }
+
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }

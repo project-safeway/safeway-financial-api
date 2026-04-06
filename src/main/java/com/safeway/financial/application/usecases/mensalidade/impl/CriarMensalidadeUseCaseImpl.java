@@ -57,6 +57,7 @@ public class CriarMensalidadeUseCaseImpl implements CriarMensalidadeUseCase {
         Mensalidade mensalidade = new Mensalidade(
                 null,
                 input.alunoId(),
+                usuarioId,
                 alunoData.nome(),
                 input.dataVencimento(),
                 input.valorMensalidade(),

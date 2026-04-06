@@ -60,6 +60,7 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
         return new Mensalidade(
                 dto.id(),
                 dto.alunoId(),
+                null,
                 dto.nomeAluno(),
                 dto.dataVencimento(),
                 dto.valorMensalidade(),

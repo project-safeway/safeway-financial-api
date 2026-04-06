@@ -46,6 +46,7 @@ public class MensalidadeScheduler {
                 Mensalidade mensalidade = new Mensalidade(
                         null,
                         aluno.id(),
+                        aluno.usuarioId(),
                         aluno.nome(),
                         dataVencimento,
                         aluno.valorMensalidade(),
