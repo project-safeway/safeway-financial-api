@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -17,6 +18,9 @@ public interface MensalidadeJpaRepository extends JpaRepository<MensalidadeEntit
 
     @Query("SELECT m FROM MensalidadeEntity m WHERE m.alunoId = :alunoId")
     List<MensalidadeEntity> findByAlunoId(@Param("alunoId") UUID alunoId);
+
+        @Query("SELECT m FROM MensalidadeEntity m WHERE m.id = :id AND m.usuarioId = :usuarioId")
+        Optional<MensalidadeEntity> findByIdAndUsuarioId(@Param("id") UUID id, @Param("usuarioId") UUID usuarioId);
 
     @Query("SELECT DISTINCT m.alunoId FROM MensalidadeEntity m " +
             "WHERE m.dataVencimento BETWEEN :inicio AND :fim")
