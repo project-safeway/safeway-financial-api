@@ -1,0 +1,70 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [ "main", "master" ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: safeway-financial
+
+jobs:
+  build_test_docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Build (compile/package)
+        run: ./mvnw -DskipTests package
+
+      - name: Unit tests
+        run: ./mvnw test
+
+      - name: Docker build
+        run: docker build -t local/${{ env.ECR_REPOSITORY }}:${{ github.sha }} .
+
+      - name: Configure AWS credentials (OIDC)
+        if: ${{ github.event_name == 'push' && vars.AWS_AUTH_METHOD == 'oidc' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+
+      - name: Configure AWS credentials (access keys)
+        if: ${{ github.event_name == 'push' && vars.AWS_AUTH_METHOD != 'oidc' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+
+      - name: Login to Amazon ECR
+        if: github.event_name == 'push'
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Push image to ECR (sha tag)
+        if: github.event_name == 'push'
+        env:
+          ECR_REGISTRY: ${{ steps.ecr.outputs.registry }}
+          SHA_SHORT: ${{ github.sha }}
+        run: |
+          SHA_SHORT="${SHA_SHORT:0:12}"
+          docker tag "local/${ECR_REPOSITORY}:${{ github.sha }}" "${ECR_REGISTRY}/${ECR_REPOSITORY}:sha-${SHA_SHORT}"
+          docker push "${ECR_REGISTRY}/${ECR_REPOSITORY}:sha-${SHA_SHORT}"
