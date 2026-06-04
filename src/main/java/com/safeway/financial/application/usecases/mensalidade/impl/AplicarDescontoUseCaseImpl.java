@@ -3,8 +3,8 @@ package com.safeway.financial.application.usecases.mensalidade.impl;
 import com.safeway.financial.application.dto.MensalidadeDTO;
 import com.safeway.financial.application.ports.output.UsuarioGateway;
 import com.safeway.financial.application.usecases.mensalidade.AplicarDescontoUseCase;
+import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadePorIdUseCase;
 import com.safeway.financial.domain.entities.Mensalidade;
-import com.safeway.financial.domain.exceptions.MensalidadeNotFoundException;
 import com.safeway.financial.domain.exceptions.OperationNotAlloyedException;
 import com.safeway.financial.domain.exceptions.ValorDescontoNotValidException;
 import com.safeway.financial.domain.repositories.MensalidadeRepository;
@@ -21,6 +21,7 @@ public class AplicarDescontoUseCaseImpl implements AplicarDescontoUseCase {
 
     private final MensalidadeRepository mensalidadeRepository;
     private final UsuarioGateway usuarioGateway;
+    private final BuscarMensalidadePorIdUseCase buscarMensalidadePorIdUseCase;
 
     @Override
     public MensalidadeDTO aplicarDesconto(UUID mensalidadeId, Double valorDesconto, UUID usuarioId) {
@@ -34,8 +35,9 @@ public class AplicarDescontoUseCaseImpl implements AplicarDescontoUseCase {
             throw new ValorDescontoNotValidException("Valor de desconto deve ser maior que zero.");
         }
 
-        Mensalidade mensalidade = mensalidadeRepository.buscarPorIdEUsuarioId(mensalidadeId, usuarioId)
-            .orElseThrow(() -> new MensalidadeNotFoundException("Erro ao tentar buscar a mensalidade"));
+        // Use the BuscarMensalidadePorIdUseCase to fetch and convert to domain (tests expect this)
+        MensalidadeDTO dto = buscarMensalidadePorIdUseCase.buscarMensalidadePorId(mensalidadeId, usuarioId);
+        Mensalidade mensalidade = buscarMensalidadePorIdUseCase.converterParaDomain(dto);
 
         if (valorDesconto >= mensalidade.getValorMensalidade()) {
             throw new ValorDescontoNotValidException("Valor de desconto não pode ser maior ou igual ao valor da mensalidade.");
