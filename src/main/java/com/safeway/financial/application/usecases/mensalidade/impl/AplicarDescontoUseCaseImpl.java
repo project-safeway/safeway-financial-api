@@ -35,7 +35,6 @@ public class AplicarDescontoUseCaseImpl implements AplicarDescontoUseCase {
             throw new ValorDescontoNotValidException("Valor de desconto deve ser maior que zero.");
         }
 
-        // Use the BuscarMensalidadePorIdUseCase to fetch and convert to domain (tests expect this)
         MensalidadeDTO dto = buscarMensalidadePorIdUseCase.buscarMensalidadePorId(mensalidadeId, usuarioId);
         Mensalidade mensalidade = buscarMensalidadePorIdUseCase.converterParaDomain(dto);
 
