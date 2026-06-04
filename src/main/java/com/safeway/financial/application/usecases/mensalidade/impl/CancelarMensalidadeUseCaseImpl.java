@@ -2,10 +2,10 @@ package com.safeway.financial.application.usecases.mensalidade.impl;
 
 import com.safeway.financial.application.dto.MensalidadeDTO;
 import com.safeway.financial.application.ports.output.UsuarioGateway;
+import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadePorIdUseCase;
 import com.safeway.financial.application.usecases.mensalidade.CancelarMensalidadeUseCase;
 import com.safeway.financial.domain.entities.Mensalidade;
 import com.safeway.financial.domain.enums.StatusPagamento;
-import com.safeway.financial.domain.exceptions.MensalidadeNotFoundException;
 import com.safeway.financial.domain.exceptions.MensalidadeWithFinalStatusException;
 import com.safeway.financial.domain.repositories.MensalidadeRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +21,7 @@ public class CancelarMensalidadeUseCaseImpl implements CancelarMensalidadeUseCas
 
     private final MensalidadeRepository mensalidadeRepository;
     private final UsuarioGateway usuarioGateway;
+    private final BuscarMensalidadePorIdUseCase buscarMensalidadePorIdUseCase;
 
     @Override
     public MensalidadeDTO cancelarMensalidade(UUID mensalidadeId, UUID usuarioId) {
@@ -31,8 +32,8 @@ public class CancelarMensalidadeUseCaseImpl implements CancelarMensalidadeUseCas
 
         log.info("Iniciando processo de cancelar mensalidade {} do usuario {}", mensalidadeId, usuarioId);
 
-        Mensalidade mensalidade = mensalidadeRepository.buscarPorIdEUsuarioId(mensalidadeId, usuarioId)
-            .orElseThrow(() -> new MensalidadeNotFoundException("Erro ao tentar buscar a mensalidade"));
+        MensalidadeDTO dto = buscarMensalidadePorIdUseCase.buscarMensalidadePorId(mensalidadeId, usuarioId);
+        Mensalidade mensalidade = buscarMensalidadePorIdUseCase.converterParaDomain(dto);
 
         validarMensalidade(mensalidade);
 
