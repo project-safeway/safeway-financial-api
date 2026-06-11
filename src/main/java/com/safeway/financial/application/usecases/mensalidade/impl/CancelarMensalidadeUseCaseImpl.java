@@ -33,7 +33,7 @@ public class CancelarMensalidadeUseCaseImpl implements CancelarMensalidadeUseCas
         log.info("Iniciando processo de cancelar mensalidade {} do usuario {}", mensalidadeId, usuarioId);
 
         MensalidadeDTO dto = buscarMensalidadePorIdUseCase.buscarMensalidadePorId(mensalidadeId, usuarioId);
-        Mensalidade mensalidade = buscarMensalidadePorIdUseCase.converterParaDomain(dto);
+        Mensalidade mensalidade = buscarMensalidadePorIdUseCase.converterParaDomain(dto, usuarioId);
 
         validarMensalidade(mensalidade);
 

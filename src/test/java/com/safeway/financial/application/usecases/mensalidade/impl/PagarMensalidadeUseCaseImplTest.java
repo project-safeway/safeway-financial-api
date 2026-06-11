@@ -61,7 +61,7 @@ class PagarMensalidadeUseCaseImplTest {
 
             when(usuarioGateway.estaAtivo(usuarioId)).thenReturn(true);
             when(buscarMensalidadePorIdUseCase.buscarMensalidadePorId(mensalidadeId, usuarioId)).thenReturn(dto);
-            when(buscarMensalidadePorIdUseCase.converterParaDomain(dto)).thenReturn(mensalidade);
+            when(buscarMensalidadePorIdUseCase.converterParaDomain(dto, usuarioId)).thenReturn(mensalidade);
             when(mensalidadeRepository.salvar(any(Mensalidade.class))).thenReturn(mensalidade);
 
             MensalidadeDTO resultado = pagarMensalidadeUseCase.registrarPagamento(mensalidadeId, usuarioId);
@@ -81,7 +81,7 @@ class PagarMensalidadeUseCaseImplTest {
 
             when(usuarioGateway.estaAtivo(usuarioId)).thenReturn(true);
             when(buscarMensalidadePorIdUseCase.buscarMensalidadePorId(mensalidadeId, usuarioId)).thenReturn(dto);
-            when(buscarMensalidadePorIdUseCase.converterParaDomain(dto)).thenReturn(mensalidade);
+            when(buscarMensalidadePorIdUseCase.converterParaDomain(dto, usuarioId)).thenReturn(mensalidade);
             when(mensalidadeRepository.salvar(any(Mensalidade.class))).thenReturn(mensalidade);
 
             MensalidadeDTO resultado = pagarMensalidadeUseCase.registrarPagamento(mensalidadeId, usuarioId);
@@ -116,7 +116,7 @@ class PagarMensalidadeUseCaseImplTest {
 
             when(usuarioGateway.estaAtivo(usuarioId)).thenReturn(true);
             when(buscarMensalidadePorIdUseCase.buscarMensalidadePorId(mensalidadeId, usuarioId)).thenReturn(dto);
-            when(buscarMensalidadePorIdUseCase.converterParaDomain(dto)).thenReturn(mensalidade);
+            when(buscarMensalidadePorIdUseCase.converterParaDomain(dto, usuarioId)).thenReturn(mensalidade);
 
             assertThatThrownBy(() -> pagarMensalidadeUseCase.registrarPagamento(mensalidadeId, usuarioId))
                     .isInstanceOf(MensalidadeWithFinalStatusException.class)
@@ -133,7 +133,7 @@ class PagarMensalidadeUseCaseImplTest {
 
             when(usuarioGateway.estaAtivo(usuarioId)).thenReturn(true);
             when(buscarMensalidadePorIdUseCase.buscarMensalidadePorId(mensalidadeId, usuarioId)).thenReturn(dto);
-            when(buscarMensalidadePorIdUseCase.converterParaDomain(dto)).thenReturn(mensalidade);
+            when(buscarMensalidadePorIdUseCase.converterParaDomain(dto, usuarioId)).thenReturn(mensalidade);
 
             assertThatThrownBy(() -> pagarMensalidadeUseCase.registrarPagamento(mensalidadeId, usuarioId))
                     .isInstanceOf(MensalidadeWithFinalStatusException.class);
@@ -147,7 +147,7 @@ class PagarMensalidadeUseCaseImplTest {
 
             when(usuarioGateway.estaAtivo(usuarioId)).thenReturn(true);
             when(buscarMensalidadePorIdUseCase.buscarMensalidadePorId(mensalidadeId, usuarioId)).thenReturn(dto);
-            when(buscarMensalidadePorIdUseCase.converterParaDomain(dto)).thenReturn(mensalidade);
+            when(buscarMensalidadePorIdUseCase.converterParaDomain(dto, usuarioId)).thenReturn(mensalidade);
 
             assertThatThrownBy(() -> pagarMensalidadeUseCase.registrarPagamento(mensalidadeId, usuarioId))
                     .isInstanceOf(MensalidadeWithFinalStatusException.class)

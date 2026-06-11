@@ -56,11 +56,11 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
     }
 
     @Override
-    public Mensalidade converterParaDomain(MensalidadeDTO dto) {
+    public Mensalidade converterParaDomain(MensalidadeDTO dto, UUID fkUsuario) {
         return new Mensalidade(
                 dto.id(),
                 dto.alunoId(),
-                null,
+                fkUsuario,
                 dto.nomeAluno(),
                 dto.dataVencimento(),
                 dto.valorMensalidade(),

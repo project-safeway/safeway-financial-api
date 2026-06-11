@@ -89,7 +89,7 @@ class BuscarMensalidadePorIdUseCaseImplTest {
                     LocalDate.of(2026, 3, 15), StatusPagamento.PENDENTE, null, null
             );
 
-            Mensalidade mensalidade = buscarMensalidadePorIdUseCase.converterParaDomain(dto);
+            Mensalidade mensalidade = buscarMensalidadePorIdUseCase.converterParaDomain(dto, usuarioId);
 
             assertThat(mensalidade.getId()).isEqualTo(mensalidadeId);
             assertThat(mensalidade.getAlunoId()).isEqualTo(alunoId);
