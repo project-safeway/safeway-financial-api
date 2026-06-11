@@ -34,7 +34,7 @@ public class PagarMensalidadeUseCaseImpl implements PagarMensalidadeUseCase {
         log.info("Iniciando processo de registrar o pagamento da mensalidade {} do usuário {}", mensalidadeId, usuarioId);
 
         MensalidadeDTO dto = buscarMensalidadePorIdUseCase.buscarMensalidadePorId(mensalidadeId, usuarioId);
-        Mensalidade mensalidade = buscarMensalidadePorIdUseCase.converterParaDomain(dto);
+        Mensalidade mensalidade = buscarMensalidadePorIdUseCase.converterParaDomain(dto, usuarioId);
 
         validarMensalidade(mensalidade);
 

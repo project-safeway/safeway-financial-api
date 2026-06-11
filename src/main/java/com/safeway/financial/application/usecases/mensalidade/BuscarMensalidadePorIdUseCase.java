@@ -8,6 +8,6 @@ import java.util.UUID;
 public interface BuscarMensalidadePorIdUseCase {
 
     MensalidadeDTO buscarMensalidadePorId(UUID mensalidadeId, UUID usuarioId);
-    Mensalidade converterParaDomain(MensalidadeDTO dto);
+    Mensalidade converterParaDomain(MensalidadeDTO dto, UUID fkUsuario);
 
 }

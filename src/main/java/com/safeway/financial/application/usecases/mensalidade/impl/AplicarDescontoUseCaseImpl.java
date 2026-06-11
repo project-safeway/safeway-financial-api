@@ -36,7 +36,7 @@ public class AplicarDescontoUseCaseImpl implements AplicarDescontoUseCase {
         }
 
         MensalidadeDTO dto = buscarMensalidadePorIdUseCase.buscarMensalidadePorId(mensalidadeId, usuarioId);
-        Mensalidade mensalidade = buscarMensalidadePorIdUseCase.converterParaDomain(dto);
+        Mensalidade mensalidade = buscarMensalidadePorIdUseCase.converterParaDomain(dto, usuarioId);
 
         if (valorDesconto >= mensalidade.getValorMensalidade()) {
             throw new ValorDescontoNotValidException("Valor de desconto não pode ser maior ou igual ao valor da mensalidade.");
