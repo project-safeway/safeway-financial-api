@@ -66,6 +66,12 @@ public class MensalidadeRepositoryImpl implements MensalidadeRepository {
     }
 
     @Override
+    public Optional<Mensalidade> buscarPorIdEUsuarioId(UUID id, UUID usuarioId) {
+        return mensalidadeJpaRepository.findByIdAndUsuarioId(id, usuarioId)
+                .map(mapper::toDomain);
+    }
+
+    @Override
     public Set<UUID> buscarIdsAlunosComMensalidadeNoPeriodo(LocalDate inicio, LocalDate fim) {
         return mensalidadeJpaRepository.findAlunoIdsComMensalidadeNoPeriodo(inicio, fim);
     }

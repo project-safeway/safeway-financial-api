@@ -1,7 +1,6 @@
 package com.safeway.financial.application.usecases.mensalidade.impl;
 
 import com.safeway.financial.application.dto.MensalidadeDTO;
-import com.safeway.financial.application.ports.output.AlunoGateway;
 import com.safeway.financial.application.ports.output.UsuarioGateway;
 import com.safeway.financial.application.usecases.mensalidade.BuscarMensalidadesUseCase;
 import com.safeway.financial.domain.entities.Mensalidade;
@@ -38,9 +37,6 @@ class BuscarMensalidadesUseCaseImplTest {
     private MensalidadeRepository mensalidadeRepository;
 
     @Mock
-    private AlunoGateway alunoGateway;
-
-    @Mock
     private UsuarioGateway usuarioGateway;
 
     @InjectMocks
@@ -68,14 +64,12 @@ class BuscarMensalidadesUseCaseImplTest {
                     alunoId, null, null, null, usuarioId
             );
 
-            Mensalidade mensalidade = criarMensalidade(StatusPagamento.PENDENTE);
+            Mensalidade mensalidade = criarMensalidadePendentes();
             Page<Mensalidade> mensalidadesPage = new PageImpl<>(List.of(mensalidade));
-            AlunoGateway.AlunoData alunoData = criarAlunoData();
 
             when(usuarioGateway.estaAtivo(usuarioId)).thenReturn(true);
             when(mensalidadeRepository.buscar(any(MensalidadeSpecification.class), eq(pageable)))
                     .thenReturn(mensalidadesPage);
-            when(alunoGateway.buscarPorIdEmLote(anyList())).thenReturn(List.of(alunoData));
 
             Page<MensalidadeDTO> resultado = buscarMensalidadesUseCase.executar(input, pageable);
 
@@ -98,7 +92,6 @@ class BuscarMensalidadesUseCaseImplTest {
             when(usuarioGateway.estaAtivo(usuarioId)).thenReturn(true);
             when(mensalidadeRepository.buscar(any(MensalidadeSpecification.class), eq(pageable)))
                     .thenReturn(paginaVazia);
-            when(alunoGateway.buscarPorIdEmLote(anyList())).thenReturn(Collections.emptyList());
 
             Page<MensalidadeDTO> resultado = buscarMensalidadesUseCase.executar(input, pageable);
 
@@ -117,42 +110,22 @@ class BuscarMensalidadesUseCaseImplTest {
                     usuarioId
             );
 
-            Mensalidade m1 = criarMensalidade(StatusPagamento.PENDENTE);
+            Mensalidade m1 = criarMensalidadePendentes();
             Mensalidade m2 = new Mensalidade(
                     UUID.randomUUID(), alunoId, "João Silva", LocalDate.of(2026, 2, 15),
                     300.0, StatusPagamento.ATRASADO, null, null
             );
             Page<Mensalidade> mensalidadesPage = new PageImpl<>(List.of(m1, m2));
-            AlunoGateway.AlunoData alunoData = criarAlunoData();
 
             when(usuarioGateway.estaAtivo(usuarioId)).thenReturn(true);
             when(mensalidadeRepository.buscar(any(MensalidadeSpecification.class), eq(pageable)))
                     .thenReturn(mensalidadesPage);
-            when(alunoGateway.buscarPorIdEmLote(anyList())).thenReturn(List.of(alunoData));
 
             Page<MensalidadeDTO> resultado = buscarMensalidadesUseCase.executar(input, pageable);
 
             assertThat(resultado.getContent()).hasSize(2);
-        }
-
-        @Test
-        @DisplayName("Deve retornar 'Aluno não encontrado' quando aluno não está no cache")
-        void deveRetornarAlunoNaoEncontradoQuandoNaoEstaNoCache() {
-            BuscarMensalidadesUseCase.Input input = new BuscarMensalidadesUseCase.Input(
-                    alunoId, null, null, null, usuarioId
-            );
-
-            Mensalidade mensalidade = criarMensalidade(StatusPagamento.PENDENTE);
-            Page<Mensalidade> mensalidadesPage = new PageImpl<>(List.of(mensalidade));
-
-            when(usuarioGateway.estaAtivo(usuarioId)).thenReturn(true);
-            when(mensalidadeRepository.buscar(any(MensalidadeSpecification.class), eq(pageable)))
-                    .thenReturn(mensalidadesPage);
-            when(alunoGateway.buscarPorIdEmLote(anyList())).thenReturn(Collections.emptyList());
-
-            Page<MensalidadeDTO> resultado = buscarMensalidadesUseCase.executar(input, pageable);
-
-            assertThat(resultado.getContent().getFirst().nomeAluno()).isEqualTo("Aluno não encontrado");
+            assertThat(resultado.getContent()).extracting(MensalidadeDTO::nomeAluno)
+                    .containsExactly("João Silva", "João Silva");
         }
     }
 
@@ -177,16 +150,10 @@ class BuscarMensalidadesUseCaseImplTest {
         }
     }
 
-    private Mensalidade criarMensalidade(StatusPagamento status) {
+    private Mensalidade criarMensalidadePendentes() {
         return new Mensalidade(
                 UUID.randomUUID(), alunoId, "João Silva", LocalDate.now().plusDays(30),
-                500.0, status, null, null
-        );
-    }
-
-    private AlunoGateway.AlunoData criarAlunoData() {
-        return new AlunoGateway.AlunoData(
-                alunoId, "João Silva", 500.0, 15, true, usuarioId
+                500.0, StatusPagamento.PENDENTE, null, null
         );
     }
 }

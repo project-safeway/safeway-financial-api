@@ -20,8 +20,8 @@ import java.util.UUID;
 public class CancelarMensalidadeUseCaseImpl implements CancelarMensalidadeUseCase {
 
     private final MensalidadeRepository mensalidadeRepository;
-    private final BuscarMensalidadePorIdUseCase buscarMensalidadePorIdUseCase;
     private final UsuarioGateway usuarioGateway;
+    private final BuscarMensalidadePorIdUseCase buscarMensalidadePorIdUseCase;
 
     @Override
     public MensalidadeDTO cancelarMensalidade(UUID mensalidadeId, UUID usuarioId) {

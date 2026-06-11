@@ -21,8 +21,8 @@ import java.util.UUID;
 public class PagarMensalidadeUseCaseImpl implements PagarMensalidadeUseCase {
 
     private final MensalidadeRepository mensalidadeRepository;
-    private final BuscarMensalidadePorIdUseCase buscarMensalidadePorIdUseCase;
     private final UsuarioGateway usuarioGateway;
+    private final BuscarMensalidadePorIdUseCase buscarMensalidadePorIdUseCase;
 
     @Override
     public MensalidadeDTO registrarPagamento(UUID mensalidadeId, UUID usuarioId) {
