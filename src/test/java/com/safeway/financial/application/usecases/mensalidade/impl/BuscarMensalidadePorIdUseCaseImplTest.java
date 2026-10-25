@@ -106,6 +106,20 @@ class BuscarMensalidadePorIdUseCaseImplTest {
     class Falha {
 
         @Test
+        void deveRejeitarMensalidadeDeOutroUsuarioAntesDeConsultarAluno() {
+            Mensalidade mensalidade = new Mensalidade(
+                    mensalidadeId, alunoId, UUID.randomUUID(), "Aluno", LocalDate.now(),
+                    500.0, StatusPagamento.PENDENTE, null, null);
+            when(usuarioGateway.estaAtivo(usuarioId)).thenReturn(true);
+            when(mensalidadeRepository.buscarPorId(mensalidadeId)).thenReturn(Optional.of(mensalidade));
+
+            assertThatThrownBy(() -> buscarMensalidadePorIdUseCase.buscarMensalidadePorId(mensalidadeId, usuarioId))
+                    .isInstanceOf(OperationNotAlloyedException.class);
+
+            verifyNoInteractions(alunoGateway);
+        }
+
+        @Test
         @DisplayName("Deve lançar exceção quando usuário está inativo")
         void deveLancarExcecaoQuandoUsuarioInativo() {
             when(usuarioGateway.estaAtivo(usuarioId)).thenReturn(false);
@@ -161,7 +175,7 @@ class BuscarMensalidadePorIdUseCaseImplTest {
 
     private Mensalidade criarMensalidade(StatusPagamento status) {
         return new Mensalidade(
-                mensalidadeId, alunoId, "João Silva", LocalDate.now().plusDays(30),
+                mensalidadeId, alunoId, usuarioId, "João Silva", LocalDate.now().plusDays(30),
                 500.0, status, null, null
         );
     }
@@ -172,4 +186,3 @@ class BuscarMensalidadePorIdUseCaseImplTest {
         );
     }
 }
-

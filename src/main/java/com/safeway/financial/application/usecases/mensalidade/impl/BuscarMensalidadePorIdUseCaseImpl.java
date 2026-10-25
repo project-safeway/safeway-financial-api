@@ -40,13 +40,18 @@ public class BuscarMensalidadePorIdUseCaseImpl implements BuscarMensalidadePorId
                     return new MensalidadeNotFoundException("Erro ao tentar buscar a mensalidade");
                 });
 
+        if (!usuarioId.equals(mensalidade.getUsuarioId())) {
+            log.error("A mensalidade de id {} não pertence ao usuário de id {}", mensalidadeId, usuarioId);
+            throw new OperationNotAlloyedException("Operação não permitida");
+        }
+
         AlunoGateway.AlunoData alunoData = alunoGateway.buscarPorId(mensalidade.getAlunoId())
                 .orElseThrow(() -> {
                     log.error("Erro ao buscar pelo aluno de id {}", mensalidade.getAlunoId());
                     return new AlunoNotFoundException("Erro ao tentar buscar o aluno");
                 });
 
-        if (!alunoData.usuarioId().equals(usuarioId)) {
+        if (!usuarioId.equals(alunoData.usuarioId())) {
             log.error("O id do usuário da sessão não corresponde ao id do usuario relacionado ao aluno. ID-SESSAO: {} ID-ALUNO: {}",
                     usuarioId, alunoData.usuarioId());
             throw new OperationNotAlloyedException("Operação não permitida");

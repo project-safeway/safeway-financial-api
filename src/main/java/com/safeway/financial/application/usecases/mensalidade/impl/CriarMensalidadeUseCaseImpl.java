@@ -39,7 +39,7 @@ public class CriarMensalidadeUseCaseImpl implements CriarMensalidadeUseCase {
                     return new AlunoNotFoundException("Aluno não encontrado");
                 });
 
-        if (!alunoData.usuarioId().equals(usuarioId)) {
+        if (!usuarioId.equals(alunoData.usuarioId())) {
             log.error("Usuário com id: {} não tem permissão para criar mensalidade para alunoId: {}", usuarioId, input.alunoId());
             throw new OperationNotAlloyedException("Usuário não tem permissão para criar mensalidade para este aluno.");
         }
