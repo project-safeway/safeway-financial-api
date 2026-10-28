@@ -16,13 +16,13 @@ import java.util.UUID;
 )
 public interface AlunoClient {
 
-    @GetMapping("/alunos/feign/{id}")
+    @GetMapping("/students/feign/{id}")
     AlunoResponse buscarAluno(@PathVariable UUID id);
 
-    @GetMapping("/alunos/ativos")
+    @GetMapping("/students/ativos")
     List<AlunoResponse> buscarTodosAtivos();
 
-    @PostMapping("/alunos/lote")
+    @PostMapping("/students/lote")
     List<AlunoResponse> buscarPorIdEmLote(@RequestBody List<UUID> ids);
 
     record AlunoResponse(
@@ -31,9 +31,8 @@ public interface AlunoClient {
             Double valorMensalidade,
             Integer diaVencimento,
             Boolean ativo,
-            UsuarioResponse usuario
-    ) {
-        public record UsuarioResponse(UUID idUsuario) {}
-    }
+            UUID transportId,
+            UUID motoristaId
+    ) {}
 
 }

@@ -26,16 +26,7 @@ public class AlunoGatewayAdapter implements AlunoGateway {
 
             AlunoClient.AlunoResponse response = alunoClient.buscarAluno(id);
 
-            AlunoData alunoData = new AlunoData(
-                    response.id(),
-                    response.nome(),
-                    response.valorMensalidade(),
-                    response.diaVencimento(),
-                    response.ativo(),
-                    response.usuario().idUsuario()
-            );
-
-            return Optional.of(alunoData);
+            return Optional.of(converterParaData(response));
         } catch (FeignException.NotFound ex) {
             log.warn("Aluno {} não encontrado no serviço principal", id);
             return Optional.empty();
@@ -58,14 +49,7 @@ public class AlunoGatewayAdapter implements AlunoGateway {
             List<AlunoClient.AlunoResponse> response = alunoClient.buscarTodosAtivos();
 
             return response.stream()
-                    .map(aluno -> new AlunoData(
-                            aluno.id(),
-                            aluno.nome(),
-                            aluno.valorMensalidade(),
-                            aluno.diaVencimento(),
-                            aluno.ativo(),
-                            aluno.usuario().idUsuario()
-                    ))
+                    .map(this::converterParaData)
                     .toList();
         } catch (FeignException.NotFound ex) {
             log.warn("Nenhum aluno ativo encontrado no serviço principal");
@@ -84,14 +68,7 @@ public class AlunoGatewayAdapter implements AlunoGateway {
             List<AlunoClient.AlunoResponse> response = alunoClient.buscarPorIdEmLote(ids);
 
             return response.stream()
-                    .map(aluno -> new AlunoData(
-                            aluno.id(),
-                            aluno.nome(),
-                            aluno.valorMensalidade(),
-                            aluno.diaVencimento(),
-                            aluno.ativo(),
-                            aluno.usuario().idUsuario()
-                    ))
+                    .map(this::converterParaData)
                     .toList();
         } catch (FeignException.NotFound ex) {
             log.warn("Nenhum aluno encontrado para os IDs fornecidos no serviço principal");
@@ -100,5 +77,20 @@ public class AlunoGatewayAdapter implements AlunoGateway {
             log.error("Erro ao buscar alunos em lote no serviço principal", ex);
             throw new RuntimeException("Erro ao comunicar com o serviço principal", ex);
         }
+
+    }
+
+    private AlunoData converterParaData(AlunoClient.AlunoResponse response) {
+        if (response.transportId() == null || response.motoristaId() == null) {
+            throw new IllegalStateException("Resposta do core sem transporte ou motorista para o aluno " + response.id());
+        }
+        return new AlunoData(
+                response.id(),
+                response.nome(),
+                response.valorMensalidade(),
+                response.diaVencimento(),
+                response.ativo(),
+                response.motoristaId()
+        );
     }
 }

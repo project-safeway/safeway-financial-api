@@ -13,7 +13,7 @@ import java.util.UUID;
 )
 public interface UsuarioClient {
 
-    @GetMapping("/usuarios/feign/{id}")
+    @GetMapping("/users/feign/{id}")
     UsuarioResponse buscarUsuario(@PathVariable UUID id);
 
     record UsuarioResponse(

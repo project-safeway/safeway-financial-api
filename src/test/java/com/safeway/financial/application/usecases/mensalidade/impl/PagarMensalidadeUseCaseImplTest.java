@@ -7,6 +7,8 @@ import com.safeway.financial.domain.entities.Mensalidade;
 import com.safeway.financial.domain.enums.StatusPagamento;
 import com.safeway.financial.domain.exceptions.MensalidadeWithFinalStatusException;
 import com.safeway.financial.domain.repositories.MensalidadeRepository;
+import com.safeway.financial.infrastructure.http.adapters.AlunoGatewayAdapter;
+import com.safeway.financial.infrastructure.http.clients.AlunoClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
@@ -25,6 +28,31 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PagarMensalidadeUseCaseImplTest {
+
+    @Test
+    void devePagarUsandoConsultaRealEContratoDoMotoristaSemUsuarioAninhado() {
+        AlunoClient client = mock(AlunoClient.class);
+        when(client.buscarAluno(alunoId)).thenReturn(new AlunoClient.AlunoResponse(
+                alunoId, "Aluno", 500.0, 15, true, UUID.randomUUID(), usuarioId));
+        when(usuarioGateway.estaAtivo(usuarioId)).thenReturn(true);
+        Mensalidade mensalidade = new Mensalidade(
+                mensalidadeId, alunoId, usuarioId, "Aluno", LocalDate.now().plusDays(30),
+                500.0, StatusPagamento.PENDENTE, null, null);
+        when(mensalidadeRepository.buscarPorId(mensalidadeId)).thenReturn(Optional.of(mensalidade));
+        BuscarMensalidadePorIdUseCase consulta = new BuscarMensalidadePorIdUseCaseImpl(
+                mensalidadeRepository, new AlunoGatewayAdapter(client), usuarioGateway);
+        PagarMensalidadeUseCaseImpl pagamento = new PagarMensalidadeUseCaseImpl(
+                mensalidadeRepository, usuarioGateway, consulta);
+
+        MensalidadeDTO resultado = pagamento.registrarPagamento(mensalidadeId, usuarioId);
+
+        assertThat(resultado.status()).isEqualTo(StatusPagamento.PAGO);
+        assertThat(resultado.valorPago()).isEqualTo(500.0);
+        verify(mensalidadeRepository).salvar(argThat(salva ->
+                usuarioId.equals(salva.getUsuarioId())
+                        && salva.getStatus() == StatusPagamento.PAGO
+                        && LocalDate.now().equals(salva.getDataPagamento())));
+    }
 
     @Mock
     private MensalidadeRepository mensalidadeRepository;
@@ -169,4 +197,3 @@ class PagarMensalidadeUseCaseImplTest {
         );
     }
 }
-
